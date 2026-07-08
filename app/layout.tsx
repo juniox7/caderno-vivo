@@ -4,7 +4,6 @@ import { ThemeProvider } from "./providers";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ptBR } from "@clerk/localizations";
 import { Toaster } from "sonner";
-import CheckoutInterceptor from "@/components/CheckoutInterceptor";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -60,7 +59,6 @@ export default function RootLayout({
           style={{ fontFamily: "var(--font-nunito)" }}
         >
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-            <CheckoutInterceptor />
             {children}
             <Toaster position="top-right" richColors closeButton />
           </ThemeProvider>

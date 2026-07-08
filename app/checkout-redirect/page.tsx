@@ -21,10 +21,8 @@ function CheckoutLogic() {
     }
 
     if (!isSignedIn) {
-      // Memoriza a intenção de compra no navegador
-      localStorage.setItem('pendingCheckoutPlan', plan);
-      // Envia para o login limpo (sem parâmetros que quebram)
-      window.location.href = '/sign-up';
+      const currentUrl = `/checkout-redirect?plan=${plan}`;
+      window.location.href = `/sign-up?redirect_url=${encodeURIComponent(currentUrl)}`;
       return;
     }
 
