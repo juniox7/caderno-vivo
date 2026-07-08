@@ -29,6 +29,57 @@ export async function POST(req: Request) {
       ? `1. A atividade é estrelada por: ${nomes.join(', ')} (idade base: ${idade} anos).`
       : `1. A atividade é para crianças de ${idade} anos. Invente personagens novos e aleatórios.`;
 
+    // ===== MODO SEM PERGUNTA (Apenas História) =====
+    if (formatoResposta === 'sem_pergunta') {
+      const storyPrompt = `
+Você é um especialista em educação infantil e um excelente contador de histórias.
+Crie uma história infantil longa, encantadora e envolvente.
+Retorne EXATAMENTE e APENAS um objeto JSON com o seguinte formato, sem formatação markdown:
+{
+  "titulo": "Título divertido da história (com emoji)",
+  "subtitulo": "Uma frase mágica sobre a história",
+  "atividades": [
+    {
+      "tipo": "historia",
+      "enunciado": "A HISTÓRIA COMPLETA aqui. Deve ter no mínimo 10 parágrafos, ser envolvente, com começo, meio e fim. Inclua diálogos e reviravoltas.",
+      "questoes": []
+    }
+  ],
+  "criadoEm": "${new Date().toISOString()}"
+}
+
+Regras:
+${regrasPersonagens}
+2. O tema/foco é: ${focoPedagogico}.
+3. O(s) interesse(s) são: ${interesse1} e ${interesse2}.
+4. NÃO inclua perguntas. O campo "questoes" deve ser um array VAZIO [].
+5. A história deve ser longa, rica em detalhes, com personagens cativantes e uma moral no final.
+6. ${personagensContexto}
+${promptLivre ? `7. INSTRUÇÕES ESPECIAIS: ${promptLivre}` : ''}
+      `;
+
+      const ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY || 'dummy_key_for_build',
+      });
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: storyPrompt,
+        config: {
+          responseMimeType: 'application/json',
+        }
+      });
+
+      const resultText = response.text;
+      if (!resultText) throw new Error("No response from AI");
+
+      const cleanJson = resultText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const jsonResult = JSON.parse(cleanJson);
+
+      return NextResponse.json({ atividade: jsonResult });
+    }
+
+    // ===== MODO COM PERGUNTAS (Escrita ou Múltipla Escolha) =====
     // Configuração do formato de resposta
     const formatoInstrucao = formatoResposta === 'multipla_escolha'
       ? `IMPORTANTE: Cada questão DEVE ter um campo "opcoes" com exatamente 4 alternativas (A, B, C, D) e um campo "respostaCorreta" com o texto exato da opção correta. Exemplo: "opcoes": ["Opção A", "Opção B", "Opção C", "Opção D"], "respostaCorreta": "Opção B"`
@@ -86,7 +137,9 @@ ${promptLivre ? `8. INSTRUÇÕES ESPECIAIS DA MÃE/PROFESSOR: ${promptLivre}` : 
       throw new Error("No response from AI");
     }
 
-    const jsonResult = JSON.parse(resultText);
+    // Limpa possíveis blocos markdown
+    const cleanJson = resultText.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const jsonResult = JSON.parse(cleanJson);
 
     return NextResponse.json({ atividade: jsonResult });
   } catch (error) {
@@ -94,3 +147,4 @@ ${promptLivre ? `8. INSTRUÇÕES ESPECIAIS DA MÃE/PROFESSOR: ${promptLivre}` : 
     return NextResponse.json({ error: 'Falha ao gerar atividade' }, { status: 500 });
   }
 }
+

@@ -42,7 +42,7 @@ export default function FormularioLivre() {
   const [focoPedagogico, setFocoPedagogico] = useState<FocoPedagogico>('matematica');
   const [interesse1, setInteresse1] = useState('');
   const [interesse2, setInteresse2] = useState('');
-  const [formatoResposta, setFormatoResposta] = useState<'escrita' | 'multipla_escolha'>('escrita');
+  const [formatoResposta, setFormatoResposta] = useState<'escrita' | 'multipla_escolha' | 'sem_pergunta'>('escrita');
   const [showSugestoes1, setShowSugestoes1] = useState(false);
   const [showSugestoes2, setShowSugestoes2] = useState(false);
   const [tipoAtividade, setTipoAtividade] = useState<'historia' | 'caca_palavras' | 'labirinto'>('historia');
@@ -555,7 +555,7 @@ export default function FormularioLivre() {
                   }`}
                 >
                   <Type className="w-4 h-4" />
-                  Escrita (Livre)
+                  Escrita
                 </button>
                 <button
                   type="button"
@@ -569,10 +569,23 @@ export default function FormularioLivre() {
                   <ListOrdered className="w-4 h-4" />
                   A, B, C, D
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setFormatoResposta('sem_pergunta')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                    formatoResposta === 'sem_pergunta'
+                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700 shadow-sm'
+                      : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Só História
+                </button>
               </div>
             </div>
 
             {/* Gerar Perguntas Toggle & Slider */}
+            {formatoResposta !== 'sem_pergunta' && (
             <div className="space-y-3 pt-2">
                <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
                   <ListOrdered className="w-4 h-4 text-primary-500" />
@@ -588,6 +601,7 @@ export default function FormularioLivre() {
                     [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-primary-400 [&::-webkit-slider-thumb]:to-primary-600 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-primary-200"
                 />
             </div>
+            )}
 
             {/* Gerar Imagens Toggle (Apenas Tema Livre) */}
             {focoPedagogico === 'livre' && (

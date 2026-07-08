@@ -25,14 +25,14 @@ export interface FormularioLivreData {
   focoPedagogico: FocoPedagogico;
   interesse1: string;
   interesse2: string;
-  formatoResposta: 'escrita' | 'multipla_escolha';
+  formatoResposta: 'escrita' | 'multipla_escolha' | 'sem_pergunta';
 }
 
 export interface FormularioPredefinidoData {
   nomes: string[];
   idade: number;
   categoriaId: string;
-  formatoResposta: 'escrita' | 'multipla_escolha';
+  formatoResposta: 'escrita' | 'multipla_escolha' | 'sem_pergunta';
 }
 
 export interface FormularioProfessorData {
@@ -44,7 +44,7 @@ export interface FormularioProfessorData {
   focoPedagogico: FocoPedagogico;
   objetivoPedagogico: string;
   nivel: NivelDificuldade;
-  formatoResposta: 'escrita' | 'multipla_escolha';
+  formatoResposta: 'escrita' | 'multipla_escolha' | 'sem_pergunta';
 }
 
 // ---- API Request ----
