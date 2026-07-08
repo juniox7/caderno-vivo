@@ -17,6 +17,7 @@ export interface UserStats {
   labirintosGerados: number;
   cacasGerados: number;
   conquistas: string[]; // IDs das conquistas desbloqueadas
+  onboardingCompleted: boolean;
 }
 
 export const DEFAULT_STATS: UserStats = {
@@ -32,7 +33,8 @@ export const DEFAULT_STATS: UserStats = {
   historiasGeradas: 0,
   labirintosGerados: 0,
   cacasGerados: 0,
-  conquistas: []
+  conquistas: [],
+  onboardingCompleted: false
 };
 
 let currentUserId: string | null = null;
@@ -227,4 +229,10 @@ export function registrarAtividade(tipo: 'historia' | 'caca_palavras' | 'labirin
   
   saveStats(stats);
   checkBadges(stats);
+}
+
+export function concluirOnboarding() {
+  const stats = getStats();
+  stats.onboardingCompleted = true;
+  saveStats(stats);
 }

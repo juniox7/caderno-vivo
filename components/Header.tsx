@@ -6,9 +6,10 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useAuth, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { getStats, UserStats, adicionarSementes, setUserId, syncFromCloud } from '@/lib/gamificacao';
-import { setHistoricoUserId } from '@/lib/historico';
+import { setHistoricoUserId, syncCloudHistorico } from '@/lib/historico';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
+import OnboardingModal from '@/components/OnboardingModal';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -65,8 +66,10 @@ export default function Header() {
     if (user?.id) {
       setUserId(user.id);
       setHistoricoUserId(user.id);
-      syncFromCloud().then(() => {
-        setStats(getStats());
+      
+      // Sincroniza dados da nuvem pro localStorage
+      Promise.all([syncFromCloud(), syncCloudHistorico()]).then(() => {
+         setStats(getStats());
       });
     } else {
       setUserId(null);
@@ -265,6 +268,9 @@ export default function Header() {
           </nav>
         </div>
       )}
+
+      {/* Modal de Onboarding para novos usuários */}
+      {mounted && <OnboardingModal />}
     </header>
   );
 }

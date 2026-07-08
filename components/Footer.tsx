@@ -1,4 +1,5 @@
 import { Heart } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
   return (
@@ -9,6 +10,10 @@ export default function Footer() {
           <span className="font-semibold text-surface-600">CadernoVivo</span>
         </p>
         <p>© {new Date().getFullYear()} CadernoVivo. Menos tela. Mais diversão impressa.</p>
+        <div className="flex items-center gap-4 text-xs font-medium">
+          <Link href="/termos" className="hover:text-surface-600 transition-colors">Termos de Uso</Link>
+          <Link href="/privacidade" className="hover:text-surface-600 transition-colors">Privacidade</Link>
+        </div>
       </div>
     </footer>
   );
