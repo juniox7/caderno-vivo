@@ -9,7 +9,7 @@ export default function CheckoutInterceptor() {
     if (plan) {
       localStorage.removeItem('pendingCheckoutPlan');
       // Redireciona via hard-navigation
-      window.location.href = `/redirect-checkout?plan=${plan}`;
+      window.location.href = `/checkout-redirect?plan=${plan}`;
     }
   }, []);
 
