@@ -37,16 +37,23 @@ export async function POST(req: Request) {
       Add these keywords at the end: line art, strictly black and white, no shading, thick lines, coloring book style for kids, simple details, white background, highly detailed outlines.`;
     }
 
-    const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY || 'dummy_key_for_build',
-    });
+    let optimizedPrompt = basePrompt;
+    try {
+      const ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY || 'dummy_key_for_build',
+      });
 
-    const geminiResponse = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: `${systemInstruction}\n\n${basePrompt}`,
-    });
+      const geminiResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `${systemInstruction}\n\n${basePrompt}`,
+      });
+      if (geminiResponse.text) {
+        optimizedPrompt = geminiResponse.text;
+      }
+    } catch (e: any) {
+      console.warn("Gemini limit reached for image translation. Using basePrompt fallback:", e.message);
+    }
 
-    const optimizedPrompt = geminiResponse.text || basePrompt;
     console.log('Optimized Prompt for Fal:', optimizedPrompt);
 
     const result: any = await fal.subscribe('fal-ai/flux/schnell', {

@@ -20,13 +20,25 @@ export default function AtividadeDiaria() {
   const [jaFeitaHoje, setJaFeitaHoje] = useState(false);
 
   useEffect(() => {
-    setStreak(getStats().ofensivaAtual);
-    if (isAtividadeDiariaConcluidaHoje()) {
-      setJaFeitaHoje(true);
-      setConcluida(true);
-    } else {
+    const carregarEstado = () => {
+      setStreak(getStats().ofensivaAtual);
+      if (isAtividadeDiariaConcluidaHoje()) {
+        setJaFeitaHoje(true);
+        setConcluida(true);
+      }
+    };
+
+    carregarEstado();
+    if (!isAtividadeDiariaConcluidaHoje() && !gerada && !loading) {
       gerarAtividade();
     }
+
+    const handleUpdate = () => carregarEstado();
+    window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
+    
+    return () => {
+      window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

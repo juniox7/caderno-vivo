@@ -60,11 +60,11 @@ export default function FormularioProfessor() {
       const validNomesAlunos = nomesAlunos.filter(n => n.trim() !== '');
       const studentNamesContext = validNomesAlunos.length > 0 ? validNomesAlunos : [turma];
       
-      const storyPromise = fetch('/api/generate-story', {
+      const rStory = await fetch('/api/generate-story', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nomes: studentNamesContext, // Uses students' names or class name
+          nomes: studentNamesContext,
           idade: 8,
           focoPedagogico,
           interesse1: objetivoPedagogico || 'Pedagógico',
@@ -73,37 +73,38 @@ export default function FormularioProfessor() {
           formatoResposta,
           promptLivre: focoPedagogico === 'livre' ? promptLivre : undefined,
         }),
-      }).then(async r => {
-        if (r.status === 403) throw new Error('Payment Required');
-        return r.json();
       });
+      if (rStory.status === 403) throw new Error('Payment Required');
+      const storyRes = await rStory.json();
+      if (storyRes.error) throw new Error(storyRes.error);
 
-      // Fetch Fal.ai Images only if requested
-      const imagePromises = [];
+      // Fetch Fal.ai Images sequentially
+      const imageResults = [];
       if (gerarImagens && qtdImagens > 0) {
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Espera 5s
+        
         for (let i = 0; i < qtdImagens; i++) {
-          imagePromises.push(
-            fetch('/api/generate-image', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                interesse1: 'Material escolar e crianças estudando',
-                interesse2: objetivoPedagogico || 'divertido',
-                promptLivre: focoPedagogico === 'livre' ? promptLivre : undefined,
-                index: i,
-                estiloImagem
-              }),
-            }).then(async r => {
-              if (r.status === 403) throw new Error('Payment Required');
-              return r.json();
-            })
-          );
+          const rImg = await fetch('/api/generate-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              interesse1: 'Material escolar e crianças estudando',
+              interesse2: objetivoPedagogico || 'divertido',
+              promptLivre: focoPedagogico === 'livre' ? promptLivre : undefined,
+              index: i,
+              estiloImagem
+            }),
+          });
+          if (rImg.status === 403) throw new Error('Payment Required');
+          const imgData = await rImg.json();
+          if (imgData.error) throw new Error(imgData.error);
+          imageResults.push(imgData);
+
+          if (i < qtdImagens - 1) {
+            await new Promise(resolve => setTimeout(resolve, 5000));
+          }
         }
       }
-
-      const [storyRes, ...imageResults] = await Promise.all([storyPromise, ...imagePromises]);
-
-      if (storyRes.error) throw new Error(storyRes.error);
       
       const atividade = storyRes.atividade;
       
@@ -477,17 +478,17 @@ export default function FormularioProfessor() {
 
                   {/* Quantidade */}
                   <div className="pl-4 pr-4 py-3 bg-amber-50 rounded-xl border border-amber-100 flex items-center justify-between">
-                    <span className="text-sm font-medium text-amber-800">Quantidade (Máx 10):</span>
+                    <span className="text-sm font-medium text-amber-800">Quantidade (Máx 5):</span>
                     <div className="flex items-center gap-4">
                       <input
                         type="range"
                         min={1}
-                        max={10}
-                        value={qtdImagens}
+                        max={5}
+                        value={qtdImagens > 5 ? 5 : qtdImagens}
                         onChange={(e) => setQtdImagens(Number(e.target.value))}
                         className="w-32 h-2 rounded-full appearance-none cursor-pointer bg-amber-200 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-600"
                       />
-                      <span className="font-bold text-amber-700 w-6 text-center">{qtdImagens}</span>
+                      <span className="font-bold text-amber-700 w-6 text-center">{qtdImagens > 5 ? 5 : qtdImagens}</span>
                     </div>
                   </div>
                 </div>
