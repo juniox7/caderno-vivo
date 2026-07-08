@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    const quota = await checkAndIncrementQuota();
+    const quota = await checkAndIncrementQuota('texto');
     if (!quota.allowed) {
       return NextResponse.json({ error: quota.error }, { status: quota.status });
     }

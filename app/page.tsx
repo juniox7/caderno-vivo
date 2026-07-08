@@ -108,7 +108,7 @@ export default function LandingPage() {
             {/* Plano Sementinha */}
             <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-3xl p-6 border border-surface-200 shadow-sm relative h-full flex flex-col">
               <h3 className="text-xl font-bold text-surface-800 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Sementinha</h3>
-              <p className="text-surface-500 text-xs mb-6 flex-1">Para quem quer conhecer a plataforma.</p>
+              <p className="text-surface-500 text-xs mb-6 flex-1">Para testar a mágica.</p>
               
               <div className="mb-6">
                 <span className="text-3xl font-extrabold text-surface-800">Grátis</span>
@@ -133,10 +133,10 @@ export default function LandingPage() {
             {/* Plano Basic */}
             <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-3xl p-6 border-2 border-indigo-200 shadow-sm relative h-full flex flex-col">
               <h3 className="text-xl font-bold text-indigo-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Basic</h3>
-              <p className="text-surface-500 text-xs mb-6 flex-1">Ideal para o dia a dia.</p>
+              <p className="text-surface-500 text-xs mb-6 flex-1">Ideal para a rotina.</p>
               
               <div className="mb-6">
-                <span className="text-3xl font-extrabold text-surface-800">R$ 19</span>
+                <span className="text-3xl font-extrabold text-surface-800">R$ 27</span>
                 <span className="text-surface-500 text-sm">/mês</span>
               </div>
 
@@ -151,11 +151,11 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-surface-600 text-xs">Imagens com IA</span>
+                  <span className="text-surface-600 text-xs">Imagens Coloridas com IA</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-surface-600 text-xs">Acesso à Loja</span>
+                  <span className="text-amber-500 shrink-0 mt-0.5 text-xs">⚠️</span>
+                  <span className="text-amber-700 font-semibold text-xs">Apenas 2 desenhos para colorir</span>
                 </div>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function LandingPage() {
               </div>
               
               <h3 className="text-xl font-bold text-amber-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Premium</h3>
-              <p className="text-amber-800/70 text-xs mb-6 flex-1">Para criadores frenéticos!</p>
+              <p className="text-amber-800/70 text-xs mb-6 flex-1">Para diversão sem limites.</p>
               
               <div className="mb-6">
                 <span className="text-3xl font-extrabold text-amber-900">R$ 39</span>
@@ -181,15 +181,15 @@ export default function LandingPage() {
               <div className="space-y-3 mt-auto">
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-amber-900 text-xs font-bold">100 atividades / mês</span>
+                  <span className="text-amber-900 text-xs font-bold">100 atividades / mês <span className="font-normal opacity-70">(Fica R$0,39 cada)</span></span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-amber-900 text-xs">Sem Limites de Imagem</span>
+                  <span className="text-amber-900 text-xs">Imagens Coloridas com IA</span>
                 </div>
-                <div className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-amber-900 text-xs">Suporte Prioritário</span>
+                <div className="flex items-start gap-2 bg-amber-100/50 p-2 rounded-lg -ml-2 -mr-2">
+                  <span className="shrink-0 text-sm">🔥</span>
+                  <span className="text-amber-900 text-xs font-black uppercase tracking-wide">Desenhos para Colorir ILIMITADOS</span>
                 </div>
               </div>
             </div>
@@ -200,16 +200,16 @@ export default function LandingPage() {
                 ILIMITADO
               </div>
 
-              <h3 className="text-xl font-bold text-violet-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Turbo</h3>
-              <p className="text-violet-600/70 text-xs mb-6 flex-1">Uso ilimitado e sem limites.</p>
+              <h3 className="text-xl font-bold text-violet-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Anual Ilimitado</h3>
+              <p className="text-violet-600/70 text-xs mb-6 flex-1">1 ano inteiro de paz e silêncio.</p>
               
               <div className="mb-6">
-                <span className="text-3xl font-extrabold text-violet-900">R$ 97</span>
-                <span className="text-violet-700 text-sm">/mês</span>
+                <span className="text-3xl font-extrabold text-violet-900">R$ 147</span>
+                <span className="text-violet-700 text-sm">/ano</span>
               </div>
 
               <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:from-violet-600 hover:to-fuchsia-600 font-bold transition-colors mb-6 shadow-md text-sm">
-                Assinar Turbo
+                Assinar Anual Ilimitado
               </Link>
 
               <div className="space-y-3 mt-auto">
@@ -219,11 +219,11 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
-                  <span className="text-violet-900 text-xs">Tudo do Premium</span>
+                  <span className="text-violet-900 text-xs">Tudo do plano Premium</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
-                  <span className="text-violet-900 text-xs">Acesso Antecipado a Novidades</span>
+                  <span className="text-violet-900 text-xs">Economize mais de 60%</span>
                 </div>
               </div>
             </div>

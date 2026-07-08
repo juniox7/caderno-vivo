@@ -12,13 +12,13 @@ export async function POST(req: Request) {
   }
 
   try {
-    const quota = await checkAndIncrementQuota();
+    const dados = await req.json();
+    const { tipoAtividade, tema, dificuldade } = dados; // tipoAtividade = 'caca_palavras' | 'labirinto'
+
+    const quota = await checkAndIncrementQuota(tipoAtividade);
     if (!quota.allowed) {
       return NextResponse.json({ error: quota.error }, { status: quota.status });
     }
-
-    const dados = await req.json();
-    const { tipoAtividade, tema, dificuldade } = dados; // tipoAtividade = 'caca_palavras' | 'labirinto'
 
     let tamanhoGrid = 12; // medio default
     if (dificuldade === 'facil') tamanhoGrid = 8;

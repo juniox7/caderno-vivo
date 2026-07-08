@@ -13,9 +13,9 @@ const PLANS = [
   {
     tier: 'BASIC' as PlanTier,
     nome: 'Plano Basic',
-    descricao: 'Ideal para o dia a dia',
+    descricao: 'Ideal para a rotina',
     icon: Star,
-    features: ['30 Atividades/mês', 'Imagens c/ IA', 'Acesso à Loja'],
+    features: ['30 Atividades/mês', 'Imagens Coloridas com IA', '⚠️ Apenas 2 desenhos para colorir'],
     buttonText: 'Assinar Basic',
     styles: {
       card: 'border-surface-200 bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100',
@@ -27,9 +27,9 @@ const PLANS = [
   {
     tier: 'PREMIUM' as PlanTier,
     nome: 'Plano Premium',
-    descricao: 'Para criadores frenéticos',
+    descricao: 'Para diversão sem limites',
     icon: Sparkles,
-    features: ['100 Atividades/mês', 'Sem Limites de Imagem', 'Suporte Prioritário'],
+    features: ['100 Atividades/mês', 'Imagens Coloridas com IA', '🔥 Desenhos ILIMITADOS'],
     buttonText: 'Assinar Premium',
     badge: 'MAIS POPULAR',
     styles: {
@@ -42,11 +42,11 @@ const PLANS = [
   },
   {
     tier: 'TURBO' as PlanTier,
-    nome: 'Plano Turbo',
-    descricao: 'Uso ilimitado e sem limites',
+    nome: 'Anual Ilimitado',
+    descricao: '1 ano inteiro de paz e silêncio',
     icon: Zap,
-    features: ['Atividades Ilimitadas', 'Tudo do Premium', 'Acesso Antecipado'],
-    buttonText: 'Assinar Turbo',
+    features: ['Atividades Ilimitadas!', 'Tudo do Premium', 'Economize > 60%'],
+    buttonText: 'Assinar Anual',
     badge: 'ILIMITADO',
     styles: {
       card: 'border-violet-400 bg-gradient-to-br from-violet-50 to-fuchsia-50 shadow-lg',

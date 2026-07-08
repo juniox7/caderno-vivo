@@ -1,15 +1,17 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
+export type ActivityType = 'texto' | 'caca_palavras' | 'labirinto' | 'imagem';
+
 export const PLAN_LIMITS = {
-  FREE: 5,
-  BASIC: 30,
-  PREMIUM: 100,
-  TURBO: 999999, // Basicamente ilimitado
+  FREE: { texto: 5, caca_palavras: 2, labirinto: 2, imagem: 0 },
+  BASIC: { texto: 30, caca_palavras: 15, labirinto: 15, imagem: 2 },
+  PREMIUM: { texto: 100, caca_palavras: 50, labirinto: 50, imagem: 999999 },
+  TURBO: { texto: 999999, caca_palavras: 999999, labirinto: 999999, imagem: 999999 },
 };
 
 type PlanTier = keyof typeof PLAN_LIMITS;
 
-export async function checkAndIncrementQuota() {
+export async function checkAndIncrementQuota(type: ActivityType = 'texto') {
   const { userId } = await auth();
 
   if (!userId) {
@@ -21,11 +23,17 @@ export async function checkAndIncrementQuota() {
 
   // Read plan from publicMetadata (set by webhook) or default to FREE
   const planTier = (user.publicMetadata?.plan_tier as PlanTier) || 'FREE';
-  const limit = PLAN_LIMITS[planTier] || PLAN_LIMITS.FREE;
+  const limits = PLAN_LIMITS[planTier] || PLAN_LIMITS.FREE;
+  const limitForType = limits[type];
+
+  // Se o plano não permite nenhuma geração desse tipo
+  if (limitForType === 0) {
+    return { allowed: false, error: 'Payment Required', status: 403 };
+  }
 
   // Read usage from privateMetadata
-  let { generations_count = 0, last_generation_reset } = user.privateMetadata as {
-    generations_count?: number;
+  let { usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, imagem: 0 }, last_generation_reset } = user.privateMetadata as {
+    usage_counts?: Record<ActivityType, number>;
     last_generation_reset?: string;
   };
 
@@ -33,7 +41,7 @@ export async function checkAndIncrementQuota() {
   
   // If no reset date or it's older than 30 days, reset the count
   if (!last_generation_reset) {
-    generations_count = 0;
+    usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, imagem: 0 };
     last_generation_reset = now.toISOString();
   } else {
     const lastReset = new Date(last_generation_reset);
@@ -41,22 +49,24 @@ export async function checkAndIncrementQuota() {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     
     if (diffDays >= 30) {
-      generations_count = 0;
+      usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, imagem: 0 };
       last_generation_reset = now.toISOString();
     }
   }
 
-  if (generations_count >= limit) {
+  const currentCount = usage_counts[type] || 0;
+
+  if (currentCount >= limitForType) {
     return { allowed: false, error: 'Payment Required', status: 403 };
   }
 
   // Increment usage
-  const newCount = generations_count + 1;
+  usage_counts[type] = currentCount + 1;
 
   await client.users.updateUserMetadata(userId, {
     privateMetadata: {
       ...user.privateMetadata,
-      generations_count: newCount,
+      usage_counts,
       last_generation_reset,
     },
   });
