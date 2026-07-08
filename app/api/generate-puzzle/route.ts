@@ -24,13 +24,17 @@ export async function POST(req: Request) {
     if (dificuldade === 'facil') tamanhoGrid = 8;
     else if (dificuldade === 'dificil') tamanhoGrid = 16;
 
+    let palavrasConfig = { qtd: '6 a 8', tamanho: '10' };
+    if (dificuldade === 'facil') palavrasConfig = { qtd: '5 a 6', tamanho: '7' };
+    else if (dificuldade === 'dificil') palavrasConfig = { qtd: '8 a 12', tamanho: '14' };
+
     const ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY || 'dummy_key_for_build',
     });
 
     if (tipoAtividade === 'caca_palavras') {
-      const prompt = `Gere uma lista de 6 a 8 palavras curtas e simples (sem acentos ou caracteres especiais) relacionadas ao tema "${tema}". 
-As palavras devem ter no máximo 10 letras cada.
+      const prompt = `Gere uma lista de ${palavrasConfig.qtd} palavras curtas e simples (sem acentos ou caracteres especiais) relacionadas ao tema "${tema}". 
+As palavras devem ter no máximo ${palavrasConfig.tamanho} letras cada. Considere o nível de dificuldade como: ${dificuldade.toUpperCase()}.
 Retorne APENAS um JSON válido contendo um array de strings chamado "palavras". Exemplo: {"palavras": ["GATO", "CACHORRO", "VACA"]}`;
 
       const response = await ai.models.generateContent({

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const dados = await req.json();
-    const { nomes, idade, focoPedagogico, interesse1, interesse2, qtdQuestoes, formatoResposta, promptLivre } = dados;
+    const { nomes, idade, focoPedagogico, interesse1, interesse2, qtdQuestoes, formatoResposta, promptLivre, nivel } = dados;
 
     const limit = qtdQuestoes ? qtdQuestoes : 5;
     
@@ -55,7 +55,8 @@ ${regrasPersonagens}
 4. NÃO inclua perguntas. O campo "questoes" deve ser um array VAZIO [].
 5. A história deve ser longa, rica em detalhes, com personagens cativantes e uma moral no final.
 6. ${personagensContexto}
-${promptLivre ? `7. INSTRUÇÕES ESPECIAIS: ${promptLivre}` : ''}
+7. O nível de dificuldade geral (vocabulário e complexidade) deve ser: ${nivel ? nivel.toUpperCase() : 'MEDIO'}.
+${promptLivre ? `8. INSTRUÇÕES ESPECIAIS: ${promptLivre}` : ''}
       `;
 
       const ai = new GoogleGenAI({
@@ -116,8 +117,9 @@ ${regrasPersonagens}
 4. Crie EXATAMENTE ${limit} questões.
 5. Se for Matemática, as perguntas devem ser cálculos adequados para a idade.
 6. Se for Interpretação/Leitura, o enunciado deve ser uma historinha (mínimo de 4 linhas) e as perguntas devem ser sobre o texto.
-7. ${formatoInstrucao}
-${promptLivre ? `8. INSTRUÇÕES ESPECIAIS DA MÃE/PROFESSOR: ${promptLivre}` : ''}
+7. O nível de dificuldade geral (vocabulário e complexidade das perguntas) deve ser: ${nivel ? nivel.toUpperCase() : 'MEDIO'}.
+8. ${formatoInstrucao}
+${promptLivre ? `9. INSTRUÇÕES ESPECIAIS DA MÃE/PROFESSOR: ${promptLivre}` : ''}
     `;
 
     const ai = new GoogleGenAI({
