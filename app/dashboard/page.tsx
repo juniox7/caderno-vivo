@@ -4,11 +4,13 @@ import AtividadeDiaria from '@/components/AtividadeDiaria';
 import SeletorModo from '@/components/SeletorModo';
 import StreakTracker from '@/components/StreakTracker';
 import PainelFazendinha from '@/components/PainelFazendinha';
+import CheckoutInterceptor from '@/components/CheckoutInterceptor';
 import { Printer, Sparkles, Brain, Zap } from 'lucide-react';
 
 export default function Home() {
   return (
     <>
+      <CheckoutInterceptor />
       <Header />
 
       <main className="flex-1">
