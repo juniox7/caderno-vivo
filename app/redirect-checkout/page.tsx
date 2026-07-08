@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, Suspense } from 'react';
+import { useEffect, Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ function CheckoutLogic() {
   const plan = searchParams.get('plan');
   const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -39,17 +40,29 @@ function CheckoutLogic() {
         if (data.url) {
           window.location.href = data.url;
         } else {
-          toast.error(data.error || 'Erro ao gerar checkout');
-          setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+          setErrorMsg(data.error || 'Erro desconhecido da API');
         }
-      } catch (err) {
-        toast.error('Erro de conexão ao checkout.');
-        setTimeout(() => { window.location.href = '/dashboard'; }, 2000);
+      } catch (err: any) {
+        setErrorMsg('Erro de conexão ou resposta inválida: ' + err.message);
       }
     };
 
     startCheckout();
   }, [plan, isLoaded, isSignedIn, router]);
+
+  if (errorMsg) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-surface-50 text-surface-600 px-4 text-center">
+        <h2 className="text-2xl font-bold text-red-500 mb-4">Erro Crítico de Redirecionamento</h2>
+        <p className="bg-red-100 text-red-800 p-4 rounded-xl border border-red-200 max-w-lg mb-6">
+          {errorMsg}
+        </p>
+        <button onClick={() => window.location.href = '/dashboard'} className="px-6 py-2 bg-primary-600 text-white rounded-xl font-bold">
+          Voltar ao Início
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-surface-50 dark:bg-[#0f172a] text-surface-600">
