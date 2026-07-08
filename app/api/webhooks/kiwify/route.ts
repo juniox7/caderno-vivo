@@ -105,7 +105,7 @@ export async function POST(req: Request) {
 
     if (!planTier) {
       // Fallback: tentar identificar pelo nome do produto
-      if (productName.includes('turbo')) {
+      if (productName.includes('turbo') || productName.includes('anual')) {
         planTier = 'TURBO';
       } else if (productName.includes('premium')) {
         planTier = 'PREMIUM';
