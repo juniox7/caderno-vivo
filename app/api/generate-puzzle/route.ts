@@ -18,7 +18,11 @@ export async function POST(req: Request) {
     }
 
     const dados = await req.json();
-    const { tipoAtividade, tema } = dados; // tipoAtividade = 'caca_palavras' | 'labirinto'
+    const { tipoAtividade, tema, dificuldade } = dados; // tipoAtividade = 'caca_palavras' | 'labirinto'
+
+    let tamanhoGrid = 12; // medio default
+    if (dificuldade === 'facil') tamanhoGrid = 8;
+    else if (dificuldade === 'dificil') tamanhoGrid = 16;
 
     const ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY || 'dummy_key_for_build',
@@ -47,7 +51,7 @@ Retorne APENAS um JSON válido contendo um array de strings chamado "palavras". 
       const palavras = result.palavras || [];
 
       // Gerar a matriz do caça palavras
-      const { grid, placements } = generateWordSearch(palavras, 12);
+      const { grid, placements } = generateWordSearch(palavras, tamanhoGrid);
 
       return NextResponse.json({ 
         tipo: 'caca_palavras',
@@ -80,8 +84,8 @@ Retorne APENAS um JSON válido.`;
       const inicio = result.inicio || '🏁';
       const fim = result.fim || '🏆';
 
-      // Gerar matriz do labirinto (tamanho 10x10)
-      const mazeGrid = generateMaze(10, 10);
+      // Gerar matriz do labirinto
+      const mazeGrid = generateMaze(tamanhoGrid, tamanhoGrid);
 
       return NextResponse.json({
         tipo: 'labirinto',

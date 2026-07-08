@@ -40,6 +40,7 @@ export default function FormularioLivre() {
   const [idade, setIdade] = useState(7);
   const [anoEscolar, setAnoEscolar] = useState('2ano');
   const [focoPedagogico, setFocoPedagogico] = useState<FocoPedagogico>('matematica');
+  const [nivel, setNivel] = useState('medio');
   const [interesse1, setInteresse1] = useState('');
   const [interesse2, setInteresse2] = useState('');
   const [formatoResposta, setFormatoResposta] = useState<'escrita' | 'multipla_escolha' | 'sem_pergunta'>('escrita');
@@ -84,6 +85,7 @@ export default function FormularioLivre() {
             body: JSON.stringify({
               tipoAtividade,
               tema: interesse1 || 'Aleatório',
+              dificuldade: nivel,
             }),
           });
           if (r.status === 403) throw new Error('Payment Required');
@@ -115,6 +117,7 @@ export default function FormularioLivre() {
           focoPedagogico,
           interesse1: interesse1.trim(),
           interesse2: interesse2.trim(),
+          nivel,
           qtdQuestoes,
           formatoResposta,
           promptLivre: focoPedagogico === 'livre' ? promptLivre : undefined,
@@ -392,6 +395,23 @@ export default function FormularioLivre() {
                       {n}
                     </span>
                   ))}
+                </div>
+
+                {/* Dificuldade */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
+                    <Target className="w-4 h-4 text-primary-500" />
+                    Dificuldade
+                  </label>
+                  <select
+                    value={nivel}
+                    onChange={(e) => setNivel(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 border border-surface-200 text-surface-800 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="facil">Fácil</option>
+                    <option value="medio">Médio</option>
+                    <option value="dificil">Difícil</option>
+                  </select>
                 </div>
               </div>
             </div>
