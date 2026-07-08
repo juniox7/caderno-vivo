@@ -8,7 +8,15 @@ export interface HistoricoItem {
   imagens: string[]; // Base64 or URLs
 }
 
-const STORAGE_KEY = 'cadernovivo-historico';
+let currentUserId: string | null = null;
+
+export function setHistoricoUserId(id: string | null) {
+  currentUserId = id;
+}
+
+function getStorageKey() {
+  return currentUserId ? `cadernovivo-historico-${currentUserId}` : 'cadernovivo-historico-anon';
+}
 
 export function salvarNoHistorico(item: Omit<HistoricoItem, 'id' | 'data'>) {
   if (typeof window === 'undefined') return;
@@ -27,7 +35,7 @@ export function salvarNoHistorico(item: Omit<HistoricoItem, 'id' | 'data'>) {
     historico.pop();
   }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(historico));
+  localStorage.setItem(getStorageKey(), JSON.stringify(historico));
   window.dispatchEvent(new Event('cadernovivo-historico-update'));
 }
 
@@ -35,7 +43,7 @@ export function getHistorico(): HistoricoItem[] {
   if (typeof window === 'undefined') return [];
   
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
+    const data = localStorage.getItem(getStorageKey());
     return data ? JSON.parse(data) : [];
   } catch (err) {
     console.error('Erro ao ler histórico', err);

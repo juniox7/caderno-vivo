@@ -13,7 +13,7 @@ export interface UserStats {
   }
 }
 
-const DEFAULT_STATS: UserStats = {
+export const DEFAULT_STATS: UserStats = {
   sementes: 0,
   ofensivaAtual: 0,
   historicoCheckins: [],
@@ -24,21 +24,53 @@ const DEFAULT_STATS: UserStats = {
   }
 };
 
-const STORAGE_KEY = '@cadernovivo_gamificacao';
+let currentUserId: string | null = null;
+
+export function setUserId(id: string | null) {
+  currentUserId = id;
+}
+
+function getStorageKey() {
+  return currentUserId ? `@cadernovivo_gamificacao_${currentUserId}` : '@cadernovivo_gamificacao_anon';
+}
 
 // Lê o estado do localStorage
 export function getStats(): UserStats {
   if (typeof window === 'undefined') return DEFAULT_STATS;
-  const data = localStorage.getItem(STORAGE_KEY);
+  const data = localStorage.getItem(getStorageKey());
   return data ? JSON.parse(data) : DEFAULT_STATS;
 }
 
-// Salva o estado no localStorage
+// Salva o estado no localStorage e sincroniza na nuvem
 export function saveStats(stats: UserStats) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+    localStorage.setItem(getStorageKey(), JSON.stringify(stats));
     // Dispara evento global para componentes reagirem
     window.dispatchEvent(new Event('cadernovivo-gamificacao-update'));
+
+    // Sincroniza em background
+    if (currentUserId) {
+      fetch('/api/gamificacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(stats)
+      }).catch(err => console.error("Falha ao sincronizar gamificação", err));
+    }
+  }
+}
+
+// Puxa os dados reais da nuvem na inicialização
+export async function syncFromCloud() {
+  if (!currentUserId || typeof window === 'undefined') return;
+  try {
+    const res = await fetch('/api/gamificacao');
+    const cloudStats = await res.json();
+    if (cloudStats && !cloudStats.error) {
+       localStorage.setItem(getStorageKey(), JSON.stringify(cloudStats));
+       window.dispatchEvent(new Event('cadernovivo-gamificacao-update'));
+    }
+  } catch (err) {
+    console.error("Falha ao baixar gamificação da nuvem", err);
   }
 }
 

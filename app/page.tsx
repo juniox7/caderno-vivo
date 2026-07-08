@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Sparkles, Brain, Pencil, Heart, ArrowRight, CheckCircle2, Shield, Star, Rocket } from 'lucide-react';
+import { Sparkles, Brain, Pencil, Heart, ArrowRight, CheckCircle2, Shield, Star, Rocket, Zap, X } from 'lucide-react';
 import Footer from '@/components/Footer';
 
 export default function LandingPage() {
@@ -103,124 +103,127 @@ export default function LandingPage() {
             <p className="text-surface-500 text-lg">Cancele quando quiser. Sem taxas escondidas.</p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8 items-center max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 items-start max-w-7xl mx-auto">
             
             {/* Plano Sementinha */}
-            <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-3xl p-8 border border-surface-200 shadow-sm relative dark:bg-surface-100">
-              <h3 className="text-2xl font-bold text-surface-800 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Plano Sementinha</h3>
-              <p className="text-surface-500 text-sm mb-6">Para quem quer conhecer a mágica do CadernoVivo.</p>
+            <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-3xl p-6 border border-surface-200 shadow-sm relative h-full flex flex-col">
+              <h3 className="text-xl font-bold text-surface-800 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Sementinha</h3>
+              <p className="text-surface-500 text-xs mb-6 flex-1">Para quem quer conhecer a plataforma.</p>
               
-              <div className="mb-8">
-                <span className="text-4xl font-extrabold text-surface-800">Grátis</span>
-                <span className="text-surface-500"> /sempre</span>
+              <div className="mb-6">
+                <span className="text-3xl font-extrabold text-surface-800">Grátis</span>
               </div>
 
-              <Link href="/sign-up" className="w-full block text-center py-3.5 px-6 rounded-xl border-2 border-primary-200 text-primary-600 font-bold hover:bg-primary-50 transition-colors mb-8">
-                Começar Gratuitamente
+              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl border-2 border-primary-200 text-primary-600 font-bold hover:bg-primary-50 transition-colors mb-6 text-sm">
+                Começar
               </Link>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm">5 atividades personalizadas por mês.</span>
+              <div className="space-y-3 mt-auto">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-surface-600 text-xs">5 atividades / mês</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm">Acesso ao "Modo Predefinido".</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm">Check-in diário na Fazendinha.</span>
-                </div>
-                <div className="flex items-start gap-3 opacity-50">
-                  <X className="w-5 h-5 text-red-400 shrink-0" />
-                  <span className="text-surface-600 text-sm">Sem ilustrações geradas por IA.</span>
-                </div>
-                <div className="flex items-start gap-3 opacity-50">
-                  <X className="w-5 h-5 text-red-400 shrink-0" />
-                  <span className="text-surface-600 text-sm">Loja da Fazendinha bloqueada.</span>
+                <div className="flex items-start gap-2 opacity-50">
+                  <X className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <span className="text-surface-600 text-xs">Sem IA de Imagens</span>
                 </div>
               </div>
             </div>
 
-            {/* Plano Aventureiro (Destaque) */}
-            <div className="bg-gradient-to-b from-primary-600 to-primary-800 rounded-3xl p-8 border border-primary-500 shadow-2xl relative transform lg:-translate-y-4">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1 shadow-lg">
-                <Star className="w-4 h-4" /> Mais Popular
-              </div>
+            {/* Plano Basic */}
+            <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-3xl p-6 border-2 border-indigo-200 shadow-sm relative h-full flex flex-col">
+              <h3 className="text-xl font-bold text-indigo-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Basic</h3>
+              <p className="text-surface-500 text-xs mb-6 flex-1">Ideal para o dia a dia.</p>
               
-              <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Plano Aventureiro</h3>
-              <p className="text-primary-200 text-sm mb-6">Para crianças que querem criar todos os dias!</p>
-              
-              <div className="mb-8">
-                <span className="text-4xl font-extrabold text-white">R$ 19,90</span>
-                <span className="text-primary-200"> /mês</span>
+              <div className="mb-6">
+                <span className="text-3xl font-extrabold text-surface-800">R$ 19</span>
+                <span className="text-surface-500 text-sm">/mês</span>
               </div>
 
-              <Link href="/sign-up" className="w-full block text-center py-3.5 px-6 rounded-xl bg-white dark:bg-surface-100 dark:text-surface-800 text-primary-700 font-extrabold hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 transition-colors mb-8 shadow-lg">
-                Assinar Plano Mensal
+              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold transition-colors mb-6 text-sm">
+                Assinar Basic
               </Link>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-white text-sm">30 atividades personalizadas por mês.</span>
+              <div className="space-y-3 mt-auto">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-surface-600 text-xs font-medium">30 atividades / mês</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-white text-sm">Acesso total ao "Modo Livre".</span>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-surface-600 text-xs">Imagens com IA</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-white text-sm">Desenhos para Colorir (IA).</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-white text-sm">Loja da Fazendinha Liberada!</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-white text-sm">Suporte prioritário.</span>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-surface-600 text-xs">Acesso à Loja</span>
                 </div>
               </div>
             </div>
 
-            {/* Plano Família Premium */}
-            <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-3xl p-8 border border-surface-200 shadow-sm relative overflow-hidden dark:bg-surface-100">
-              <div className="absolute top-0 right-0 bg-emerald-500 text-white px-8 py-1 rotate-45 translate-x-8 translate-y-4 text-xs font-bold shadow-md">
-                ECONOMIA
+            {/* Plano Premium (Destaque) */}
+            <div className="bg-gradient-to-b from-amber-50 to-amber-100 rounded-3xl p-6 border-2 border-amber-400 shadow-xl relative h-full flex flex-col transform xl:-translate-y-4">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 px-3 py-0.5 rounded-full text-[10px] font-black tracking-wider flex items-center gap-1 shadow-md uppercase">
+                <Star className="w-3 h-3" /> Mais Popular
               </div>
-
-              <h3 className="text-2xl font-bold text-surface-800 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Família Premium</h3>
-              <p className="text-surface-500 text-sm mb-6">Acesso total para pais e professores.</p>
               
-              <div className="mb-2">
-                <span className="text-4xl font-extrabold text-surface-800">R$ 97</span>
-                <span className="text-surface-500"> /semestral</span>
+              <h3 className="text-xl font-bold text-amber-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Premium</h3>
+              <p className="text-amber-800/70 text-xs mb-6 flex-1">Para criadores frenéticos!</p>
+              
+              <div className="mb-6">
+                <span className="text-3xl font-extrabold text-amber-900">R$ 39</span>
+                <span className="text-amber-700 text-sm">/mês</span>
               </div>
-              <p className="text-xs text-surface-400 mb-6 line-through">De R$ 119,40 no mensal</p>
 
-              <Link href="/sign-up" className="w-full block text-center py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-amber-900 font-extrabold hover:from-amber-300 hover:to-amber-400 transition-colors mb-8 shadow-lg flex items-center justify-center gap-2">
-                <Rocket className="w-5 h-5" />
-                Quero com Desconto
+              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-amber-400 text-amber-900 hover:bg-amber-300 font-bold transition-colors mb-6 shadow-md text-sm">
+                Assinar Premium
               </Link>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm font-bold">100 atividades por mês!</span>
+              <div className="space-y-3 mt-auto">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-amber-900 text-xs font-bold">100 atividades / mês</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm">Tudo do Plano Aventureiro.</span>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-amber-900 text-xs">Sem Limites de Imagem</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm">Modo Professor liberado (turmas inteiras).</span>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <span className="text-amber-900 text-xs">Suporte Prioritário</span>
                 </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <span className="text-surface-600 text-sm font-bold text-amber-600">Bônus: 1000 Sementes Iniciais!</span>
+              </div>
+            </div>
+
+            {/* Plano Turbo */}
+            <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 rounded-3xl p-6 border-2 border-violet-300 shadow-sm relative h-full flex flex-col">
+              <div className="absolute top-0 right-0 bg-violet-500 text-white px-6 py-1.5 rotate-45 translate-x-6 translate-y-3 text-[10px] font-black tracking-wider shadow-md">
+                ILIMITADO
+              </div>
+
+              <h3 className="text-xl font-bold text-violet-700 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>Turbo</h3>
+              <p className="text-violet-600/70 text-xs mb-6 flex-1">Uso ilimitado e sem limites.</p>
+              
+              <div className="mb-6">
+                <span className="text-3xl font-extrabold text-violet-900">R$ 97</span>
+                <span className="text-violet-700 text-sm">/mês</span>
+              </div>
+
+              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:from-violet-600 hover:to-fuchsia-600 font-bold transition-colors mb-6 shadow-md text-sm">
+                Assinar Turbo
+              </Link>
+
+              <div className="space-y-3 mt-auto">
+                <div className="flex items-start gap-2">
+                  <Zap className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
+                  <span className="text-violet-900 text-xs font-bold">Atividades Ilimitadas!</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
+                  <span className="text-violet-900 text-xs">Tudo do Premium</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-violet-500 shrink-0 mt-0.5" />
+                  <span className="text-violet-900 text-xs">Acesso Antecipado a Novidades</span>
                 </div>
               </div>
             </div>
@@ -231,13 +234,5 @@ export default function LandingPage() {
 
       <Footer />
     </div>
-  );
-}
-
-function X({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-    </svg>
   );
 }

@@ -1,18 +1,33 @@
 'use client';
 
-import { BookOpen, Sparkles, Menu, X, Store, Bug, Moon, Sun } from 'lucide-react';
+import { BookOpen, Sparkles, Menu, X, Store, Bug, Moon, Sun, Crown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { useAuth, SignInButton, UserButton } from '@clerk/nextjs';
-import { getStats, UserStats, adicionarSementes } from '@/lib/gamificacao';
+import { useAuth, SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { getStats, UserStats, adicionarSementes, setUserId, syncFromCloud } from '@/lib/gamificacao';
+import { setHistoricoUserId } from '@/lib/historico';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [stats, setStats] = useState<UserStats | null>(null);
   const { theme, setTheme } = useTheme();
   const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
   const [mounted, setMounted] = useState(false);
+
+  const plan = user?.publicMetadata?.plan_tier as string | undefined;
+
+  const getPlanCrownColor = (p?: string) => {
+    switch (p) {
+      case 'BASIC': return 'text-[#cd7f32] fill-[#cd7f32]/20'; // Bronze
+      case 'PREMIUM': return 'text-slate-400 fill-slate-400/20'; // Silver
+      case 'TURBO': return 'text-yellow-500 fill-yellow-500/20'; // Gold
+      default: return null;
+    }
+  };
+  
+  const crownColor = getPlanCrownColor(plan);
 
   useEffect(() => {
     setMounted(true);
@@ -21,6 +36,21 @@ export default function Header() {
     window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
     return () => window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
   }, []);
+
+  // Inicializa o sync com a nuvem quando o usuário logar
+  useEffect(() => {
+    if (user?.id) {
+      setUserId(user.id);
+      setHistoricoUserId(user.id);
+      syncFromCloud().then(() => {
+        setStats(getStats());
+      });
+    } else {
+      setUserId(null);
+      setHistoricoUserId(null);
+      setStats(getStats()); // reset to default
+    }
+  }, [user?.id]);
 
   return (
     <header className="sticky top-0 z-50 glass">
@@ -89,7 +119,14 @@ export default function Header() {
             </SignInButton>
           )}
           {isLoaded && isSignedIn && (
-            <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 rounded-xl shadow-sm hover:scale-105 transition-transform" } }} />
+            <div className="relative">
+              <UserButton appearance={{ elements: { avatarBox: "w-8 h-8 rounded-xl shadow-sm hover:scale-105 transition-transform" } }} />
+              {crownColor && (
+                <div className="absolute -top-2 -right-2.5 bg-white dark:bg-surface-100 rounded-full p-0.5 shadow-sm border border-surface-100 rotate-[15deg]">
+                  <Crown className={`w-4 h-4 ${crownColor}`} />
+                </div>
+              )}
+            </div>
           )}
 
           {/* Botão Dev para testes (apenas dev) */}
@@ -177,8 +214,18 @@ export default function Header() {
               )}
               {isLoaded && isSignedIn && (
                 <div className="flex items-center gap-3 px-3">
-                  <UserButton />
-                  <span className="text-sm font-semibold text-surface-700">Sua Conta</span>
+                  <div className="relative">
+                    <UserButton />
+                    {crownColor && (
+                      <div className="absolute -top-2 -right-2 bg-white dark:bg-surface-100 rounded-full p-0.5 shadow-sm border border-surface-100 rotate-[15deg]">
+                        <Crown className={`w-3.5 h-3.5 ${crownColor}`} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-surface-700">Sua Conta</span>
+                    {plan && <span className="text-[10px] uppercase font-bold text-surface-400 tracking-wider">Plano {plan}</span>}
+                  </div>
                 </div>
               )}
             </div>

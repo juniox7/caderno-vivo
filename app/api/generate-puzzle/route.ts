@@ -41,7 +41,9 @@ Retorne APENAS um JSON válido contendo um array de strings chamado "palavras". 
       const responseText = response.text;
       if (!responseText) throw new Error("A resposta da IA veio vazia.");
 
-      const result = JSON.parse(responseText);
+      // Limpa possíveis blocos markdown (```json e ```)
+      const cleanJson = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const result = JSON.parse(cleanJson);
       const palavras = result.palavras || [];
 
       // Gerar a matriz do caça palavras
@@ -72,7 +74,9 @@ Retorne APENAS um JSON válido.`;
       const responseText = response.text;
       if (!responseText) throw new Error("A resposta da IA veio vazia.");
 
-      const result = JSON.parse(responseText);
+      // Limpa possíveis blocos markdown
+      const cleanJson = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const result = JSON.parse(cleanJson);
       const inicio = result.inicio || '🏁';
       const fim = result.fim || '🏆';
 

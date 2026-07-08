@@ -4,6 +4,7 @@ export const PLAN_LIMITS = {
   FREE: 5,
   BASIC: 30,
   PREMIUM: 100,
+  TURBO: 999999, // Basicamente ilimitado
 };
 
 type PlanTier = keyof typeof PLAN_LIMITS;
