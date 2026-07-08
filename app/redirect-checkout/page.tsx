@@ -23,7 +23,7 @@ function CheckoutLogic() {
       // Memoriza a intenção de compra no navegador
       localStorage.setItem('pendingCheckoutPlan', plan);
       // Envia para o login limpo (sem parâmetros que quebram)
-      router.push('/sign-up');
+      window.location.href = '/sign-up';
       return;
     }
 
