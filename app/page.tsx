@@ -140,7 +140,7 @@ export default function LandingPage() {
                 <span className="text-surface-500 text-sm">/mês</span>
               </div>
 
-              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold transition-colors mb-6 text-sm">
+              <Link href="/sign-up?redirect_url=%2Fredirect-checkout%3Fplan%3DBASIC" className="w-full block text-center py-3 px-4 rounded-xl bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold transition-colors mb-6 text-sm">
                 Assinar Basic
               </Link>
 
@@ -174,7 +174,7 @@ export default function LandingPage() {
                 <span className="text-amber-700 text-sm">/mês</span>
               </div>
 
-              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-amber-400 text-amber-900 hover:bg-amber-300 font-bold transition-colors mb-6 shadow-md text-sm">
+              <Link href="/sign-up?redirect_url=%2Fredirect-checkout%3Fplan%3DPREMIUM" className="w-full block text-center py-3 px-4 rounded-xl bg-amber-400 text-amber-900 hover:bg-amber-300 font-bold transition-colors mb-6 shadow-md text-sm">
                 Assinar Premium
               </Link>
 
@@ -208,7 +208,7 @@ export default function LandingPage() {
                 <span className="text-violet-700 text-sm">/ano</span>
               </div>
 
-              <Link href="/sign-up" className="w-full block text-center py-3 px-4 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:from-violet-600 hover:to-fuchsia-600 font-bold transition-colors mb-6 shadow-md text-sm">
+              <Link href="/sign-up?redirect_url=%2Fredirect-checkout%3Fplan%3DTURBO" className="w-full block text-center py-3 px-4 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white hover:from-violet-600 hover:to-fuchsia-600 font-bold transition-colors mb-6 shadow-md text-sm">
                 Assinar Anual Ilimitado
               </Link>
 
