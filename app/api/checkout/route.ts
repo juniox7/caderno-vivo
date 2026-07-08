@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 
-// Mapeamento de planos para variáveis de ambiente dos links da Kiwify
-const PLAN_LINKS: Record<string, string | undefined> = {
-  BASIC: process.env.KIWIFY_LINK_BASIC,
-  PREMIUM: process.env.KIWIFY_LINK_PREMIUM,
-  TURBO: process.env.KIWIFY_LINK_TURBO,
+// Mapeamento de planos com fallback hardcoded
+const PLAN_LINKS: Record<string, string> = {
+  BASIC: process.env.KIWIFY_LINK_BASIC || 'https://pay.kiwify.com.br/Vj7UZdV',
+  PREMIUM: process.env.KIWIFY_LINK_PREMIUM || 'https://pay.kiwify.com.br/ih7MjRV',
+  TURBO: process.env.KIWIFY_LINK_TURBO || 'https://pay.kiwify.com.br/vQTsfuT',
 };
 
 export async function POST(req: Request) {
