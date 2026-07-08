@@ -14,8 +14,7 @@ import Link from 'next/link';
 import { AtividadeGerada } from '@/lib/types';
 import { adicionarSementes, removerSementes, registrarAtividade } from '@/lib/gamificacao';
 import { toast } from 'sonner';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+
 
 interface PreviewAtividadeProps {
   atividade: AtividadeGerada;
@@ -44,56 +43,19 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
       // Registrar que baixou um PDF para incentivar a gamificação
       adicionarSementes(2);
       
-      const element = document.getElementById('pdf-content');
-      if (!element) throw new Error('Elemento não encontrado');
+      const { pdf } = await import('@react-pdf/renderer');
+      const { CadernoPDF } = await import('@/lib/pdf-generator');
 
-      // Remover botões "Dica/Resposta" e classes interativas antes de tirar print
-      const buttonsHidden = document.querySelectorAll('.dica-resposta-btn');
-      buttonsHidden.forEach((el) => {
-        (el as HTMLElement).style.display = 'none';
-      });
-
-      const canvas = await html2canvas(element, {
-        scale: 2, // Alta resolução
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff' // Força fundo branco
-      });
-
-      // Restaurar botões
-      buttonsHidden.forEach((el) => {
-        (el as HTMLElement).style.display = 'flex';
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      const pageHeight = pdf.internal.pageSize.getHeight();
+      const blob = await pdf(<CadernoPDF atividade={atividade} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `CadernoVivo_${atividade.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
       
-      let position = 0;
-      let heightLeft = pdfHeight;
-
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-      pdf.setFontSize(10);
-      pdf.setTextColor(150);
-      pdf.text('Criado magicamente por CadernoVivo.com', pdfWidth / 2, pageHeight - 5, { align: 'center' });
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position -= pageHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        pdf.text('Criado magicamente por CadernoVivo.com', pdfWidth / 2, pageHeight - 5, { align: 'center' });
-        heightLeft -= pageHeight;
-      }
-
-      pdf.save(`CadernoVivo_${atividade.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
       toast.success('PDF Oficial baixado com sucesso! 🎉');
     } catch (error) {
       console.error(error);
