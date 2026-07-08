@@ -272,7 +272,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                 {atv.imagemUrl && (
                   <div className="mt-4 rounded-xl overflow-hidden border-2 border-surface-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={atv.imagemUrl} alt="Desenho para colorir" className="w-full h-auto object-cover" />
+                    <img src={atv.imagemUrl} alt="Desenho para colorir" crossOrigin="anonymous" className="w-full h-auto object-cover" />
                   </div>
                 )}
               </div>
