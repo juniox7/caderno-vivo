@@ -5,7 +5,8 @@ const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/criar(.*)',
   '/fazendinha(.*)',
-  '/perfil(.*)'
+  '/perfil(.*)',
+  '/redirect-checkout(.*)'
 ]);
 
 const isPublicLandingPage = createRouteMatcher(['/']);
