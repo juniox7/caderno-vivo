@@ -25,6 +25,15 @@ const ANIMAIS_LOJA = [
   { id: 'galinha', nome: 'Pintadinha', emoji: '🐔', custo: 15 },
 ];
 
+const BADGES_BRONZE = [
+  { id: 'aventureiro_iniciante', nome: 'Aventureiro Iniciante', desc: 'Gerou a 1ª atividade', icon: '🚀' },
+  { id: 'mestre_frequencia', nome: 'Mestre da Frequência', desc: '3 dias seguidos', icon: '🔥' },
+  { id: 'poupador_bronze', nome: 'Poupador Bronze', desc: 'Acumulou 50 sementes', icon: '💰' },
+  { id: 'desbravador_labirintos', nome: 'Desbravador de Labirintos', desc: 'Gerou o 1º Labirinto', icon: '🧩' },
+  { id: 'olho_aguia', nome: 'Olho de Águia', desc: 'Gerou o 1º Caça-Palavras', icon: '🔍' },
+  { id: 'pequeno_leitor', nome: 'Pequeno Leitor', desc: 'Gerou a 1ª História', icon: '📚' },
+];
+
 export default function Fazendinha() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [codigo, setCodigo] = useState('');
@@ -213,6 +222,34 @@ export default function Fazendinha() {
                             🌱 {animal.custo}
                           </button>
                         )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Conquistas Bronze */}
+              <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-2xl p-5 border border-surface-200 shadow-sm mt-6">
+                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <span className="text-amber-600">🥉</span>
+                  Mural de Conquistas (Bronze)
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {BADGES_BRONZE.map(badge => {
+                    const unlocked = stats.conquistas?.includes(badge.id);
+                    return (
+                      <div 
+                        key={badge.id} 
+                        className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all ${
+                          unlocked 
+                            ? 'bg-gradient-to-b from-amber-50 to-orange-50 border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.3)]' 
+                            : 'bg-surface-50 border-surface-100 opacity-50 grayscale'
+                        }`}
+                      >
+                        <div className={`text-3xl mb-1 ${unlocked ? 'animate-pulse' : ''}`}>{badge.icon}</div>
+                        <div className="font-bold text-xs text-surface-800 leading-tight">{badge.nome}</div>
+                        <div className="text-[10px] text-surface-500 mt-1 leading-tight">{badge.desc}</div>
                       </div>
                     )
                   })}

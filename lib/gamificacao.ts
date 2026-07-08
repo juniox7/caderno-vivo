@@ -10,7 +10,13 @@ export interface UserStats {
   inventario: {
     arvoreNivel: number;
     animais: string[]; // 'vaca', 'cachorro', 'galinha'
-  }
+  };
+  // Novas métricas para Badges:
+  atividadesGeradas: number;
+  historiasGeradas: number;
+  labirintosGerados: number;
+  cacasGerados: number;
+  conquistas: string[]; // IDs das conquistas desbloqueadas
 }
 
 export const DEFAULT_STATS: UserStats = {
@@ -21,7 +27,12 @@ export const DEFAULT_STATS: UserStats = {
   inventario: {
     arvoreNivel: 0, // 0 = sem árvore
     animais: [],
-  }
+  },
+  atividadesGeradas: 0,
+  historiasGeradas: 0,
+  labirintosGerados: 0,
+  cacasGerados: 0,
+  conquistas: []
 };
 
 let currentUserId: string | null = null;
@@ -38,7 +49,8 @@ function getStorageKey() {
 export function getStats(): UserStats {
   if (typeof window === 'undefined') return DEFAULT_STATS;
   const data = localStorage.getItem(getStorageKey());
-  return data ? JSON.parse(data) : DEFAULT_STATS;
+  const parsed = data ? JSON.parse(data) : null;
+  return parsed ? { ...DEFAULT_STATS, ...parsed } : DEFAULT_STATS;
 }
 
 // Salva o estado no localStorage e sincroniza na nuvem
@@ -103,6 +115,7 @@ export function realizarCheckin(): { sucesso: boolean; sementesGanhadas: number 
   stats.sementes += 5; // Recompensa padrão de check-in
 
   saveStats(stats);
+  checkBadges(stats);
   return { sucesso: true, sementesGanhadas: 5 };
 }
 
@@ -111,6 +124,7 @@ export function adicionarSementes(quantidade: number) {
   const stats = getStats();
   stats.sementes += quantidade;
   saveStats(stats);
+  checkBadges(stats);
 }
 
 // Remove sementes com limite mínimo de 0
@@ -137,6 +151,7 @@ export function concluirAtividadeDiaria(bonus: number): boolean {
   stats.dataUltimaAtividadeDiaria = getTodayStr();
   stats.sementes += bonus;
   saveStats(stats);
+  checkBadges(stats);
   return true;
 }
 
@@ -158,4 +173,58 @@ export function comprarItem(itemId: string, preco: number): boolean {
 
   saveStats(stats);
   return true;
+}
+
+// ============================
+// CONQUISTAS (BADGES) E ATIVIDADES
+// ============================
+
+export function checkBadges(stats: UserStats) {
+  const newBadges: string[] = [];
+
+  const addBadge = (id: string) => {
+    if (!stats.conquistas) stats.conquistas = [];
+    if (!stats.conquistas.includes(id)) {
+      stats.conquistas.push(id);
+      newBadges.push(id);
+    }
+  };
+
+  // 1. Aventureiro Iniciante
+  if (stats.atividadesGeradas >= 1) addBadge('aventureiro_iniciante');
+  
+  // 2. Mestre da Frequência
+  if (stats.ofensivaAtual >= 3) addBadge('mestre_frequencia');
+  
+  // 3. Poupador Bronze (Fazendeiro Aprendiz)
+  if (stats.sementes >= 50) addBadge('poupador_bronze');
+  
+  // 4. Desbravador de Labirintos
+  if (stats.labirintosGerados >= 1) addBadge('desbravador_labirintos');
+  
+  // 5. Olho de Águia (Caça-Palavras)
+  if (stats.cacasGerados >= 1) addBadge('olho_aguia');
+  
+  // 6. Pequeno Leitor (História)
+  if (stats.historiasGeradas >= 1) addBadge('pequeno_leitor');
+
+  if (newBadges.length > 0) {
+    saveStats(stats);
+    // Dispara evento para mostrar confetes e toast
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cadernovivo-badge-unlocked', { detail: newBadges }));
+    }
+  }
+}
+
+export function registrarAtividade(tipo: 'historia' | 'caca_palavras' | 'labirinto') {
+  const stats = getStats();
+  stats.atividadesGeradas = (stats.atividadesGeradas || 0) + 1;
+  
+  if (tipo === 'historia') stats.historiasGeradas = (stats.historiasGeradas || 0) + 1;
+  else if (tipo === 'caca_palavras') stats.cacasGerados = (stats.cacasGerados || 0) + 1;
+  else if (tipo === 'labirinto') stats.labirintosGerados = (stats.labirintosGerados || 0) + 1;
+  
+  saveStats(stats);
+  checkBadges(stats);
 }

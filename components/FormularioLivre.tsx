@@ -31,6 +31,7 @@ import PreviewAtividade from './PreviewAtividade';
 import { toast } from 'sonner';
 import CacaPalavras from './CacaPalavras';
 import Labirinto from './Labirinto';
+import { registrarAtividade } from '@/lib/gamificacao';
 
 export default function FormularioLivre() {
   const router = useRouter();
@@ -101,6 +102,7 @@ export default function FormularioLivre() {
         setPuzzleGerados(puzzlesData);
         setAtividadeGerada(null);
         setLoading(false);
+        registrarAtividade(tipoAtividade); // gamification
         setTimeout(() => {
           document.getElementById('resultado-inline')?.scrollIntoView({ behavior: 'smooth' });
         }, 300);
@@ -183,6 +185,8 @@ export default function FormularioLivre() {
         modo: 'Livre',
         imagens: imageResults.map(img => img?.imageUrl).filter(Boolean) as string[]
       });
+      
+      registrarAtividade('historia'); // gamification
       
       // Scroll smoothly to the result
       setTimeout(() => {

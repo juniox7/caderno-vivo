@@ -12,8 +12,10 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { AtividadeGerada } from '@/lib/types';
-import { adicionarSementes, removerSementes } from '@/lib/gamificacao';
+import { adicionarSementes, removerSementes, registrarAtividade } from '@/lib/gamificacao';
 import { toast } from 'sonner';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 interface PreviewAtividadeProps {
   atividade: AtividadeGerada;
@@ -39,24 +41,60 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      const response = await fetch('/api/gerar-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ atividade }),
+      // Registrar que baixou um PDF para incentivar a gamificação
+      adicionarSementes(2);
+      
+      const element = document.getElementById('pdf-content');
+      if (!element) throw new Error('Elemento não encontrado');
+
+      // Remover botões "Dica/Resposta" e classes interativas antes de tirar print
+      const buttonsHidden = document.querySelectorAll('.dica-resposta-btn');
+      buttonsHidden.forEach((el) => {
+        (el as HTMLElement).style.display = 'none';
       });
 
-      if (!response.ok) throw new Error('Erro ao gerar PDF');
+      const canvas = await html2canvas(element, {
+        scale: 2, // Alta resolução
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff' // Força fundo branco
+      });
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      // Define a proper filename
-      link.setAttribute('download', `CadernoVivo_${atividade.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Restaurar botões
+      buttonsHidden.forEach((el) => {
+        (el as HTMLElement).style.display = 'flex';
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      let position = 0;
+      let heightLeft = pdfHeight;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      pdf.setFontSize(10);
+      pdf.setTextColor(150);
+      pdf.text('Criado magicamente por CadernoVivo.com', pdfWidth / 2, pageHeight - 5, { align: 'center' });
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        pdf.text('Criado magicamente por CadernoVivo.com', pdfWidth / 2, pageHeight - 5, { align: 'center' });
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`CadernoVivo_${atividade.titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+      toast.success('PDF Oficial baixado com sucesso! 🎉');
     } catch (error) {
       console.error(error);
       toast.error('Houve um problema ao gerar o PDF. Tente novamente.');
@@ -194,7 +232,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
       </div>
 
       <div className="flex-1 px-4 py-6">
-        <div className="max-w-3xl mx-auto space-y-6 animate-fade-in-up">
+        <div id="pdf-content" className="max-w-3xl mx-auto space-y-6 animate-fade-in-up bg-white sm:bg-transparent p-2 sm:p-0">
           {/* Header card */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700 p-6 shadow-xl shadow-primary-200">
             <div className="absolute -top-12 -right-12 w-40 h-40 bg-white dark:bg-surface-100 dark:text-surface-800/10 rounded-full blur-3xl pointer-events-none" />
@@ -310,8 +348,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                         )}
                       </div>
 
-                      {/* Dica & Resposta buttons */}
-                      <div className="ml-10 flex flex-wrap gap-2">
+                      <div className="ml-10 flex flex-wrap gap-2 dica-resposta-btn">
                         <button
                           onClick={() => toggleDica(qId)}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-600 text-xs font-medium hover:bg-amber-100 transition-colors"
@@ -398,7 +435,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                 className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 disabled:opacity-50 text-white font-bold text-sm transition-all hover:shadow-xl hover:shadow-primary-200 active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
-                {isDownloading ? 'Gerando PDF...' : 'Baixar PDF (Grátis)'}
+                {isDownloading ? 'Gerando PDF Profissional...' : 'Baixar PDF Oficial'}
               </button>
               <Link
                 href="/"

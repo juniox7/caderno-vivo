@@ -7,6 +7,8 @@ import { useTheme } from 'next-themes';
 import { useAuth, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { getStats, UserStats, adicionarSementes, setUserId, syncFromCloud } from '@/lib/gamificacao';
 import { setHistoricoUserId } from '@/lib/historico';
+import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,6 +37,27 @@ export default function Header() {
     const handleUpdate = () => setStats(getStats());
     window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
     return () => window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
+  }, []);
+
+  // Listener para confetes de conquistas
+  useEffect(() => {
+    const handleBadgeUnlocked = (e: any) => {
+      const badges = e.detail as string[];
+      if (badges && badges.length > 0) {
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#F59E0B', '#B45309', '#FDE68A'] // cores bronze/douradas
+        });
+        toast.success(`🏅 Você desbloqueou uma nova Conquista de Bronze!`, {
+          description: 'Acesse a Fazendinha para ver sua nova medalha.',
+          duration: 8000,
+        });
+      }
+    };
+    window.addEventListener('cadernovivo-badge-unlocked', handleBadgeUnlocked);
+    return () => window.removeEventListener('cadernovivo-badge-unlocked', handleBadgeUnlocked);
   }, []);
 
   // Inicializa o sync com a nuvem quando o usuário logar

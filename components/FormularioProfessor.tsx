@@ -27,6 +27,7 @@ import { FocoPedagogico, NivelDificuldade, AtividadeGerada } from '@/lib/types';
 import PreviewAtividade from './PreviewAtividade';
 import UpgradeModal from '@/components/UpgradeModal';
 import { salvarNoHistorico } from '@/lib/historico';
+import { registrarAtividade } from '@/lib/gamificacao';
 import { toast } from 'sonner';
 
 export default function FormularioProfessor() {
@@ -134,6 +135,8 @@ export default function FormularioProfessor() {
         modo: 'Professor',
         imagens: imageResults.map(img => img?.imageUrl).filter(Boolean) as string[]
       });
+      
+      registrarAtividade('historia');
       
       // Scroll smoothly to the result
       setTimeout(() => {
