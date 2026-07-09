@@ -46,15 +46,68 @@ export default function LandingPage() {
             Gere atividades pedagógicas instantâneas baseadas no que o seu filho mais ama. De futebol a dinossauros, o aprendizado nunca foi tão divertido.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/sign-up" className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-bold text-lg rounded-2xl shadow-xl shadow-primary-200 transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2">
-              Criar Primeira Atividade
-              <ArrowRight className="w-5 h-5" />
+          {/* Interactive Input */}
+          <div className="max-w-xl mx-auto bg-white p-2 rounded-3xl shadow-xl shadow-primary-200/50 border border-surface-200 flex flex-col sm:flex-row items-center gap-2 transition-all focus-within:ring-4 focus-within:ring-primary-100 focus-within:border-primary-400">
+            <div className="flex-1 flex items-center gap-3 px-4 w-full">
+              <Sparkles className="w-5 h-5 text-primary-400" />
+              <input 
+                type="text" 
+                placeholder="O que seu filho mais gosta? (Ex: Dinossauros)"
+                className="w-full bg-transparent border-none focus:ring-0 text-surface-700 placeholder:text-surface-400 py-3 font-medium text-lg outline-none"
+              />
+            </div>
+            <Link href="/sign-up" className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-bold text-lg rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap">
+              Gerar Magia <Sparkles className="w-5 h-5" />
             </Link>
-            <Link href="/amostra" className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-surface-100 dark:text-surface-800 border-2 border-primary-200 text-primary-700 hover:bg-primary-50 font-bold text-lg rounded-2xl transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500" />
-              Ver Exemplo Agora
-            </Link>
+          </div>
+          
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-surface-500 font-medium">
+            <span>Mais de 10.000 atividades geradas</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-surface-300" />
+            <Link href="/amostra" className="text-primary-600 hover:underline">Ver exemplo de PDF</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Dor vs Solução */}
+      <section className="py-20 px-6 bg-surface-100 dark:bg-[#1e293b]">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-surface-800" style={{ fontFamily: 'var(--font-baloo)' }}>
+                Tirar a criança da tela <span className="text-red-500">não precisa ser uma guerra.</span>
+              </h2>
+              <p className="text-lg text-surface-600 leading-relaxed">
+                Sabemos como é frustrante ver o YouTube e os joguinhos dominando a rotina. Mas e se você usasse exatamente o que eles amam na tela, para trazê-los para o papel?
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="mt-1 bg-red-100 p-1 rounded-full"><X className="w-4 h-4 text-red-600" /></div>
+                  <span className="text-surface-700">Brigar para fazer o dever de casa genérico da escola.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="mt-1 bg-emerald-100 p-1 rounded-full"><CheckCircle2 className="w-4 h-4 text-emerald-600" /></div>
+                  <span className="text-surface-700 font-bold">Imprimir uma missão matemática sobre o Homem-Aranha que ele faz sorrindo.</span>
+                </li>
+              </ul>
+            </div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary-500 to-fuchsia-500 rounded-3xl transform rotate-3 opacity-20 blur-xl"></div>
+              <div className="bg-white dark:bg-surface-50 p-8 rounded-3xl border border-surface-200 shadow-xl relative z-10 transform -rotate-2 hover:rotate-0 transition-transform">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                    <Heart className="w-6 h-6 text-primary-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-surface-800">O Segredo do CadernoVivo</h4>
+                    <p className="text-sm text-surface-500">Hiper-personalização instantânea</p>
+                  </div>
+                </div>
+                <p className="text-surface-700 italic">
+                  "Quando a criança percebe que o problema de matemática fala sobre o personagem favorito dela, o cérebro deixa de ver como 'obrigação' e passa a ver como 'brincadeira'."
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -93,6 +146,41 @@ export default function LandingPage() {
               <h3 className="text-xl font-bold text-surface-800 mb-4" style={{ fontFamily: 'var(--font-baloo)' }}>3. Imprima ou Resolva</h3>
               <p className="text-surface-600">Baixe o PDF lindamente formatado ou deixe a criança resolver na própria tela.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 px-6 bg-primary-50/50 dark:bg-[#1e293b]/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-surface-800" style={{ fontFamily: 'var(--font-baloo)' }}>
+              Amado por pais e professores
+            </h2>
+            <p className="text-surface-500 mt-4 text-lg">Veja o que acontece quando o aprendizado vira mágica</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { name: "Mariana S.", role: "Mãe do Lucas (7 anos)", text: "O Lucas odeia matemática. Hoje imprimi um desafio sobre Minecraft usando o Caderno Vivo e ele resolveu 3 páginas sem reclamar. Mágico!" },
+              { name: "Profª Helena", role: "Ensino Fundamental I", text: "Uso na sala de aula para alunos com dificuldade de atenção. Crio atividades com o tema que eles mais gostam e o foco deles vai a 100% na mesma hora." },
+              { name: "Rafael C.", role: "Pai da Sofia (5 anos)", text: "Estou economizando muito dinheiro com livrinhos de colorir. Agora eu digito 'Princesas que andam de Skate' e a IA cria um livro novo inteiro em segundos." }
+            ].map((dep, i) => (
+              <div key={i} className="bg-white dark:bg-surface-50 p-6 rounded-3xl border border-surface-200 shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-current" />)}
+                </div>
+                <p className="text-surface-700 mb-6 italic flex-1">"{dep.text}"</p>
+                <div className="flex items-center gap-3 mt-auto">
+                  <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center font-bold text-primary-700">
+                    {dep.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-surface-800 text-sm">{dep.name}</h4>
+                    <p className="text-xs text-surface-500">{dep.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -232,6 +320,37 @@ export default function LandingPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-24 px-6 bg-white dark:bg-surface-100">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-extrabold text-surface-800" style={{ fontFamily: 'var(--font-baloo)' }}>
+              Perguntas Frequentes
+            </h2>
+          </div>
+          <div className="space-y-4">
+            {[
+              { q: "Preciso ter uma impressora em casa?", a: "Não! Você pode gerar os PDFs e resolver direto no tablet ou celular de forma interativa, ou enviar para imprimir em uma papelaria." },
+              { q: "Para qual idade o Caderno Vivo é recomendado?", a: "A inteligência artificial adapta as atividades para qualquer idade, mas o formato é ideal para crianças de 4 a 12 anos (Educação Infantil e Ensino Fundamental)." },
+              { q: "Posso cancelar a assinatura quando quiser?", a: "Sim. Sem burocracia, sem multas e sem precisar ligar para ninguém. Você cancela com 1 clique direto no seu painel." },
+              { q: "Quais temas eu posso escolher?", a: "Literalmente qualquer um! Peppa Pig, Roblox, Dinossauros Espaciais, Receitas de Bolo... A IA cria uma atividade pedagógica baseada no que você digitar." }
+            ].map((faq, i) => (
+              <details key={i} className="group bg-surface-50 dark:bg-[#0f172a] rounded-2xl border border-surface-200 [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex items-center justify-between p-6 cursor-pointer font-bold text-surface-800 dark:text-surface-100">
+                  {faq.q}
+                  <span className="transition group-open:rotate-180 text-surface-400">
+                    <svg fill="none" height="24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                  </span>
+                </summary>
+                <div className="px-6 pb-6 text-surface-600 dark:text-surface-300 leading-relaxed">
+                  {faq.a}
+                </div>
+              </details>
+            ))}
           </div>
         </div>
       </section>
