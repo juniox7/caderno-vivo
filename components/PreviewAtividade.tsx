@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, ArrowLeft, Printer, Download, RotateCcw, Volume2, Mic, VolumeX, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ArrowLeft, Printer, Download, RotateCcw, Volume2, Mic, VolumeX, CheckCircle2, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import { AtividadeGerada } from '@/lib/types';
 import { adicionarSementes, removerSementes, registrarAtividade, gerarCodigoMagico } from '@/lib/gamificacao';

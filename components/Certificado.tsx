@@ -114,7 +114,7 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
           Baixar Certificado
         </button>
         
-        {typeof navigator !== 'undefined' && navigator.share && (
+        {typeof navigator !== 'undefined' && 'share' in navigator && (
           <button 
             onClick={handleShare}
             disabled={isExporting}

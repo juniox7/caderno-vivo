@@ -32,7 +32,7 @@ export async function checkAndIncrementQuota(type: ActivityType = 'texto') {
   }
 
   // Read usage from privateMetadata
-  let { usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, imagem: 0 }, last_generation_reset } = user.privateMetadata as {
+  let { usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, forca: 0, memoria: 0, imagem: 0 }, last_generation_reset } = user.privateMetadata as {
     usage_counts?: Record<ActivityType, number>;
     last_generation_reset?: string;
   };
@@ -41,7 +41,7 @@ export async function checkAndIncrementQuota(type: ActivityType = 'texto') {
   
   // If no reset date or it's older than 30 days, reset the count
   if (!last_generation_reset) {
-    usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, imagem: 0 };
+    usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, forca: 0, memoria: 0, imagem: 0 };
     last_generation_reset = now.toISOString();
   } else {
     const lastReset = new Date(last_generation_reset);
@@ -49,7 +49,7 @@ export async function checkAndIncrementQuota(type: ActivityType = 'texto') {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
     
     if (diffDays >= 30) {
-      usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, imagem: 0 };
+      usage_counts = { texto: 0, caca_palavras: 0, labirinto: 0, forca: 0, memoria: 0, imagem: 0 };
       last_generation_reset = now.toISOString();
     }
   }
