@@ -49,21 +49,30 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         allowTaint: true
       });
       canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        const file = new File([blob], 'certificado.png', { type: 'image/png' });
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: 'Meu Certificado no Caderno Vivo',
-            text: `Olha só o certificado que ganhei sobre ${tema}! 🚀`,
-            files: [file]
-          });
-        } else {
-          toast.error('Compartilhamento não suportado neste navegador. Baixe a imagem!');
+        if (!blob) {
+          setIsExporting(false);
+          return;
         }
-        setIsExporting(false);
+        const file = new File([blob], 'certificado.png', { type: 'image/png' });
+        try {
+          if ('share' in navigator && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Meu Certificado no Caderno Vivo',
+              text: `Olha só o certificado que ganhei sobre ${tema}! 🚀`,
+              files: [file]
+            });
+          } else {
+            toast.error('Compartilhamento não suportado. Baixe a imagem!');
+          }
+        } catch (shareErr) {
+          console.log('Compartilhamento cancelado ou falhou', shareErr);
+        } finally {
+          setIsExporting(false);
+        }
       });
     } catch (err) {
-      toast.error('Erro ao compartilhar');
+      console.error(err);
+      toast.error('Erro ao gerar a imagem');
       setIsExporting(false);
     }
   };
@@ -75,7 +84,7 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         ref={certificadoRef}
         className="relative w-full max-w-lg aspect-[1.414/1] bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg border-8 border-amber-200 p-8 flex flex-col items-center justify-center text-center overflow-hidden shadow-sm"
       >
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] pointer-events-none" />
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#d97706 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
         
         <Award className="w-16 h-16 text-amber-500 mb-2 drop-shadow-sm" />
         
