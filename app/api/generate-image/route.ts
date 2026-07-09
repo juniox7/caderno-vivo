@@ -2,6 +2,15 @@ import { NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { checkAndIncrementQuota } from '@/lib/quota';
 import { GoogleGenAI } from '@google/genai';
+import { z } from 'zod';
+import { applyRateLimit } from '@/lib/rate-limit';
+
+const imageSchema = z.object({
+  interesse1: z.string().optional(),
+  interesse2: z.string().optional(),
+  estiloImagem: z.string().optional(),
+  promptLivre: z.string().optional()
+}).catchall(z.any());
 
 export async function POST(req: Request) {
   if (!process.env.FAL_KEY) {
@@ -9,13 +18,19 @@ export async function POST(req: Request) {
   }
 
   try {
-    const quota = await checkAndIncrementQuota('imagem');
-    if (!quota.allowed) {
-      return NextResponse.json({ error: quota.error }, { status: quota.status });
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    const rateLimitResponse = applyRateLimit(ip, 5, 60000);
+    if (rateLimitResponse) return rateLimitResponse;
+
+    const body = await req.json();
+    const parsed = imageSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Dados inválidos", details: parsed.error.issues }, { status: 400 });
     }
 
-    const dados = await req.json();
-    const { interesse1, interesse2, estiloImagem, promptLivre } = dados;
+    const { interesse1, interesse2, estiloImagem, promptLivre } = parsed.data;
+
+    const quota = await checkAndIncrementQuota('imagem');
 
     // Traduz e Otimiza o prompt com Gemini
     const systemInstruction = `You are an expert prompt engineer for Stable Diffusion/Flux. 

@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { z } from 'zod';
+import { applyRateLimit } from '@/lib/rate-limit';
+
+const checkoutSchema = z.object({
+  plan: z.enum(['BASIC', 'PREMIUM', 'TURBO']),
+});
 
 // Mapeamento de planos com fallback hardcoded
 const PLAN_LINKS: Record<string, string> = {
@@ -16,7 +22,18 @@ export async function POST(req: Request) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const { plan } = await req.json();
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    const rateLimitResponse = applyRateLimit(ip, 10, 60000);
+    if (rateLimitResponse) return rateLimitResponse;
+
+    const body = await req.json();
+    const parsed = checkoutSchema.safeParse(body);
+    
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Plano inválido." }, { status: 400 });
+    }
+    
+    const { plan } = parsed.data;
 
     const baseLink = PLAN_LINKS[plan];
 

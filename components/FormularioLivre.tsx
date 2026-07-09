@@ -14,19 +14,19 @@ import {
   Wand2,
   MessageSquare,
   ListOrdered,
-  Palette,
   Plus,
   X,
   Type,
   CheckSquare,
   Image as ImageIcon,
   Puzzle,
+  Minus,
 } from 'lucide-react';
 import { salvarNoHistorico } from '@/lib/historico';
 import Link from 'next/link';
 import UpgradeModal from '@/components/UpgradeModal';
 import { FOCOS_PEDAGOGICOS, SUGESTOES_INTERESSES, ANOS_ESCOLARES } from '@/lib/constants';
-import { FocoPedagogico, AtividadeGerada } from '@/lib/types';
+import { AtividadeGerada } from '@/lib/types';
 import PreviewAtividade from './PreviewAtividade';
 import { toast } from 'sonner';
 import CacaPalavras from './CacaPalavras';
@@ -40,7 +40,14 @@ export default function FormularioLivre() {
   const [personagensAleatorios, setPersonagensAleatorios] = useState(false);
   const [idade, setIdade] = useState(7);
   const [anoEscolar, setAnoEscolar] = useState('2ano');
-  const [focoPedagogico, setFocoPedagogico] = useState<FocoPedagogico>('matematica');
+  
+  // NEW STATE: Focos Selecionados
+  const [focosSelecionados, setFocosSelecionados] = useState<{id: string, label: string, emoji: string, qtd: number}[]>([
+    {id: 'matematica', label: 'Matemática', emoji: '🔢', qtd: 5}
+  ]);
+  const isLivre = focosSelecionados.some(f => f.id === 'livre');
+  const qtdQuestoes = focosSelecionados.reduce((acc, curr) => acc + curr.qtd, 0);
+
   const [nivel, setNivel] = useState('medio');
   const [interesse1, setInteresse1] = useState('');
   const [interesse2, setInteresse2] = useState('');
@@ -54,7 +61,6 @@ export default function FormularioLivre() {
   const [estiloImagem, setEstiloImagem] = useState<'colorir'|'ilustracao'>('colorir');
   const [qtdImagens, setQtdImagens] = useState(1);
   const [qtdPuzzles, setQtdPuzzles] = useState(1);
-  const [qtdQuestoes, setQtdQuestoes] = useState(5);
   const [promptLivre, setPromptLivre] = useState('');
   
   const [atividadeGerada, setAtividadeGerada] = useState<AtividadeGerada | null>(null);
@@ -64,9 +70,48 @@ export default function FormularioLivre() {
     setNomes(['Lucas']);
     setIdade(8);
     setAnoEscolar('3ano');
-    setFocoPedagogico('matematica');
+    setFocosSelecionados([{id: 'matematica', label: 'Matemática', emoji: '🔢', qtd: 5}]);
     setInteresse1('Futebol (Fluminense e Manchester City)');
     setInteresse2('Música (Violão e teclado com teclas sensíveis ao toque)');
+  };
+
+  const handleToggleFoco = (foco: typeof FOCOS_PEDAGOGICOS[0]) => {
+    if (focosSelecionados.find(f => f.id === foco.id)) {
+      if (focosSelecionados.length > 1) {
+        setFocosSelecionados(focosSelecionados.filter(f => f.id !== foco.id));
+      } else {
+        toast.error('Você precisa selecionar pelo menos uma matéria.');
+      }
+    } else {
+      if (focosSelecionados.length < 3) {
+        // Find remaining questions up to 10
+        const currentTotal = focosSelecionados.reduce((acc, curr) => acc + curr.qtd, 0);
+        let newQtd = 3; // default
+        if (currentTotal + newQtd > 10) {
+          newQtd = Math.max(1, 10 - currentTotal);
+        }
+        setFocosSelecionados([...focosSelecionados, { id: foco.id, label: foco.label, emoji: foco.emoji, qtd: newQtd }]);
+      } else {
+        toast.error('Você pode selecionar no máximo 3 matérias ao mesmo tempo.');
+      }
+    }
+  };
+
+  const handleUpdateFocoQtd = (id: string, delta: number) => {
+    const currentTotal = focosSelecionados.reduce((acc, curr) => acc + curr.qtd, 0);
+    
+    setFocosSelecionados(focosSelecionados.map(f => {
+      if (f.id === id) {
+        const newQtd = f.qtd + delta;
+        if (newQtd < 1) return f;
+        if (delta > 0 && currentTotal >= 10) {
+          toast.error('O máximo total é de 10 perguntas.');
+          return f;
+        }
+        return { ...f, qtd: newQtd };
+      }
+      return f;
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,13 +161,12 @@ export default function FormularioLivre() {
         body: JSON.stringify({
           nomes: personagensAleatorios ? [] : validNomes,
           idade,
-          focoPedagogico,
+          focosSelecionados,
           interesse1: interesse1.trim(),
           interesse2: interesse2.trim(),
           nivel,
-          qtdQuestoes,
           formatoResposta,
-          promptLivre: focoPedagogico === 'livre' ? promptLivre : undefined,
+          promptLivre: isLivre ? promptLivre : undefined,
         }),
       });
       if (rStory.status === 403) throw new Error('Payment Required');
@@ -141,7 +185,7 @@ export default function FormularioLivre() {
             body: JSON.stringify({
               interesse1: interesse1.trim(),
               interesse2: interesse2.trim(),
-              promptLivre: focoPedagogico === 'livre' ? promptLivre : undefined,
+              promptLivre: isLivre ? promptLivre : undefined,
               index: i,
               estiloImagem
             }),
@@ -181,7 +225,7 @@ export default function FormularioLivre() {
       salvarNoHistorico({
         titulo: atividade.titulo,
         subtitulo: atividade.subtitulo,
-        foco: focoPedagogico,
+        foco: focosSelecionados.map(f => f.label).join(', '),
         modo: 'Livre',
         imagens: imageResults.map(img => img?.imageUrl).filter(Boolean) as string[]
       });
@@ -369,7 +413,7 @@ export default function FormularioLivre() {
               )}
             </div>
 
-            {/* Idade - slider visual */}
+            {/* Idade */}
             <div className="space-y-3">
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
                 <Calendar className="w-4 h-4 text-primary-500" />
@@ -386,10 +430,8 @@ export default function FormularioLivre() {
                   value={idade}
                   onChange={(e) => setIdade(Number(e.target.value))}
                   className="w-full h-2 rounded-full appearance-none cursor-pointer bg-surface-200
-                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-primary-400 [&::-webkit-slider-thumb]:to-primary-600 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-primary-200 [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110
-                    [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-gradient-to-br [&::-moz-range-thumb]:from-primary-400 [&::-moz-range-thumb]:to-primary-600 [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-lg"
+                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-primary-400 [&::-webkit-slider-thumb]:to-primary-600 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-primary-200 [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110"
                 />
-                {/* Age labels */}
                 <div className="flex justify-between mt-1.5 px-1">
                   {Array.from({ length: 10 }, (_, i) => i + 3).map((n) => (
                     <span
@@ -400,14 +442,12 @@ export default function FormularioLivre() {
                     </span>
                   ))}
                 </div>
-
               </div>
-                </div>
-
-              </>
+            </div>
+            </>
             )}
 
-            {/* Dificuldade - Movido para fora para que Caça-Palavras e Labirintos possam usar */}
+            {/* Dificuldade */}
             <div className="space-y-2 animate-fade-in-up">
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
                 <Target className="w-4 h-4 text-primary-500" />
@@ -445,32 +485,83 @@ export default function FormularioLivre() {
               </select>
             </div>
 
-            {/* Foco pedagógico - chips */}
+            {/* Foco pedagógico - MULTIPLE */}
             <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
-                <Target className="w-4 h-4 text-primary-500" />
-                Foco Pedagógico
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
+                  <Target className="w-4 h-4 text-primary-500" />
+                  Matérias (Selecione de 1 a 3)
+                </label>
+                <span className="text-xs font-bold bg-primary-100 text-primary-700 px-2 py-1 rounded-md">
+                  {focosSelecionados.length}/3
+                </span>
+              </div>
+              
               <div className="flex flex-wrap gap-2">
-                {FOCOS_PEDAGOGICOS.map((foco) => (
-                  <button
-                    key={foco.id}
-                    type="button"
-                    onClick={() => setFocoPedagogico(foco.id)}
-                    className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 ${
-                      focoPedagogico === foco.id
-                        ? 'bg-primary-500 text-white shadow-lg shadow-primary-200'
-                        : 'bg-white dark:bg-surface-100 dark:text-surface-800 text-surface-500 border border-surface-200 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 shadow-sm'
-                    }`}
-                  >
-                    {foco.emoji} {foco.label}
-                  </button>
-                ))}
+                {FOCOS_PEDAGOGICOS.map((foco) => {
+                  const isSelected = focosSelecionados.some(f => f.id === foco.id);
+                  return (
+                    <button
+                      key={foco.id}
+                      type="button"
+                      onClick={() => handleToggleFoco(foco)}
+                      className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 ${
+                        isSelected
+                          ? 'bg-primary-500 text-white shadow-lg shadow-primary-200'
+                          : 'bg-white dark:bg-surface-100 dark:text-surface-800 text-surface-500 border border-surface-200 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 shadow-sm'
+                      }`}
+                    >
+                      {foco.emoji} {foco.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Prompt Personalizado (Apenas Tema Livre) */}
-            {focoPedagogico === 'livre' && (
+            {/* Distribuição de Questões */}
+            {formatoResposta !== 'sem_pergunta' && (
+              <div className="space-y-3 bg-white dark:bg-surface-100 dark:text-surface-800 p-4 border border-surface-200 rounded-xl shadow-sm animate-fade-in-up">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
+                    <ListOrdered className="w-4 h-4 text-primary-500" />
+                    Distribuição de Perguntas
+                  </label>
+                  <span className={`text-xs font-bold px-2 py-1 rounded-md ${qtdQuestoes === 10 ? 'bg-amber-100 text-amber-700' : 'bg-primary-100 text-primary-700'}`}>
+                    Total: {qtdQuestoes}/10
+                  </span>
+                </div>
+                
+                <div className="space-y-3">
+                  {focosSelecionados.map(foco => (
+                    <div key={foco.id} className="flex items-center justify-between bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 p-2 rounded-lg border border-surface-100">
+                      <span className="text-sm font-medium flex items-center gap-2">
+                        {foco.emoji} {foco.label}
+                      </span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateFocoQtd(foco.id, -1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-surface-200 text-surface-600 hover:bg-surface-100 active:scale-95 transition-all"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="font-bold w-4 text-center">{foco.qtd}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateFocoQtd(foco.id, 1)}
+                          className="w-8 h-8 flex items-center justify-center rounded-md bg-white border border-surface-200 text-surface-600 hover:bg-surface-100 active:scale-95 transition-all"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Prompt Personalizado */}
+            {isLivre && (
               <div className="space-y-2 animate-fade-in-up">
                 <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
                   <MessageSquare className="w-4 h-4 text-primary-500" />
@@ -482,7 +573,7 @@ export default function FormularioLivre() {
                 <textarea
                   value={promptLivre}
                   onChange={(e) => setPromptLivre(e.target.value)}
-                  placeholder="Ex: Quero que a história passe uma lição sobre amizade e que as perguntas sejam sobre os animais que ele encontrou..."
+                  placeholder="Ex: Quero que a história passe uma lição sobre amizade..."
                   rows={3}
                   className="w-full px-4 py-3 rounded-xl bg-white dark:bg-surface-100 dark:text-surface-800 border border-surface-200 text-surface-800 placeholder-surface-300 text-sm focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all shadow-sm resize-none"
                 />
@@ -496,9 +587,6 @@ export default function FormularioLivre() {
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
                 <Heart className="w-4 h-4 text-primary-500" />
                 {tipoAtividade === 'historia' ? 'Interesses da criança' : 'Tema do Desafio'}
-                <span className="text-xs text-surface-300 font-normal">
-                  (o que a criança adora?)
-                </span>
               </label>
               <div className="relative">
                 <input
@@ -534,9 +622,6 @@ export default function FormularioLivre() {
               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
                 <Heart className="w-4 h-4 text-pink-500" />
                 Interesse 2
-                <span className="text-xs text-surface-300 font-normal">
-                  (outro tema que anima!)
-                </span>
               </label>
               <div className="relative">
                 <input
@@ -615,27 +700,8 @@ export default function FormularioLivre() {
               </div>
             </div>
 
-            {/* Gerar Perguntas Toggle & Slider */}
-            {formatoResposta !== 'sem_pergunta' && (
-            <div className="space-y-3 pt-2">
-               <label className="flex items-center gap-2 text-sm font-semibold text-surface-700">
-                  <ListOrdered className="w-4 h-4 text-primary-500" />
-                  Quantidade de Perguntas: <span className="text-primary-600 font-extrabold">{qtdQuestoes}</span>
-                </label>
-                <input
-                  type="range"
-                  min={1}
-                  max={10}
-                  value={qtdQuestoes}
-                  onChange={(e) => setQtdQuestoes(Number(e.target.value))}
-                  className="w-full h-2 rounded-full appearance-none cursor-pointer bg-surface-200 mt-2
-                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br [&::-webkit-slider-thumb]:from-primary-400 [&::-webkit-slider-thumb]:to-primary-600 [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-primary-200"
-                />
-            </div>
-            )}
-
-            {/* Gerar Imagens Toggle (Apenas Tema Livre) */}
-            {focoPedagogico === 'livre' && (
+            {/* Gerar Imagens Toggle */}
+            {isLivre && (
               <div className="space-y-4 pt-2 animate-fade-in-up">
                 <label className="flex items-center gap-3 cursor-pointer p-4 rounded-xl border border-surface-200 bg-white dark:bg-surface-100 dark:text-surface-800 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 transition-colors">
                   <input
@@ -652,7 +718,6 @@ export default function FormularioLivre() {
 
                 {gerarImagens && (
                   <div className="space-y-3 animate-fade-in-up">
-                    {/* Estilo da Imagem */}
                     <div className="flex gap-2">
                     <button
                       type="button"
@@ -678,7 +743,6 @@ export default function FormularioLivre() {
                     </button>
                   </div>
 
-                  {/* Quantidade */}
                   <div className="pl-4 pr-4 py-3 bg-indigo-50 rounded-xl border border-indigo-100 flex items-center justify-between">
                     <span className="text-sm font-medium text-indigo-800">Quantidade (Máx 5):</span>
                     <div className="flex items-center gap-4">

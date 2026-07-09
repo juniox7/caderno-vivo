@@ -267,7 +267,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                                 const isError = errosOpcoes[qId] === opcao;
                                 
                                 let btnClass = "w-full text-left p-3 rounded-xl border transition-all flex items-center gap-3 ";
-                                if (concluida && isCorrect) {
+                                if ((concluida && isCorrect) || (isSelected && isCorrect)) {
                                   btnClass += "bg-emerald-50 border-emerald-500 text-emerald-800";
                                 } else if (isError) {
                                   btnClass += "bg-red-50 border-red-300 text-red-700 animate-shake";
@@ -284,7 +284,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                                     disabled={concluida}
                                     className={btnClass}
                                   >
-                                    <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${concluida && isCorrect ? 'bg-emerald-500 text-white' : 'bg-surface-200 text-surface-600'}`}>
+                                    <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${((concluida && isCorrect) || (isSelected && isCorrect)) ? 'bg-emerald-500 text-white' : 'bg-surface-200 text-surface-600'}`}>
                                       {letter}
                                     </span>
                                     <span className="text-sm font-medium">{opcao}</span>

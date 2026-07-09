@@ -3,6 +3,14 @@ import { GoogleGenAI } from '@google/genai';
 import { checkAndIncrementQuota } from '@/lib/quota';
 import { generateWordSearch } from '@/lib/wordSearch';
 import { generateMaze } from '@/lib/maze';
+import { z } from 'zod';
+import { applyRateLimit } from '@/lib/rate-limit';
+
+const generateSchema = z.object({
+  tipoAtividade: z.enum(['caca_palavras', 'labirinto']),
+  tema: z.string().min(1, "Tema é obrigatório").max(100, "Tema muito longo"),
+  dificuldade: z.enum(['facil', 'medio', 'dificil']),
+});
 
 
 
@@ -12,8 +20,18 @@ export async function POST(req: Request) {
   }
 
   try {
-    const dados = await req.json();
-    const { tipoAtividade, tema, dificuldade } = dados; // tipoAtividade = 'caca_palavras' | 'labirinto'
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    const rateLimitResponse = applyRateLimit(ip, 5, 60000); // 5 reqs per minute
+    if (rateLimitResponse) return rateLimitResponse;
+
+    const body = await req.json();
+    const parsed = generateSchema.safeParse(body);
+    
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Dados inválidos", details: parsed.error.issues }, { status: 400 });
+    }
+
+    const { tipoAtividade, tema, dificuldade } = parsed.data;
 
     const quota = await checkAndIncrementQuota(tipoAtividade);
     if (!quota.allowed) {

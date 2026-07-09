@@ -4,17 +4,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { gerarAtividadeMock, gerarAtividadePredefinidaMock } from '@/lib/mock-llm';
 import { GerarAtividadeRequest, FormularioLivreData, FormularioPredefinidoData } from '@/lib/types';
+import { z } from 'zod';
+import { applyRateLimit } from '@/lib/rate-limit';
+
+const atividadeSchema = z.object({
+  modo: z.enum(['livre', 'predefinido', 'professores']),
+  dados: z.any()
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const body: GerarAtividadeRequest = await request.json();
+    const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+    const rateLimitResponse = applyRateLimit(ip, 10, 60000);
+    if (rateLimitResponse) return rateLimitResponse;
 
-    if (!body.modo || !body.dados) {
+    const rawBody = await request.json();
+    const parsed = atividadeSchema.safeParse(rawBody);
+    
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Campos "modo" e "dados" são obrigatórios.' },
+        { error: 'Campos "modo" e "dados" são obrigatórios e devem estar corretos.' },
         { status: 400 }
       );
     }
+    
+    const body = parsed.data as GerarAtividadeRequest;
 
     let resultado;
 
