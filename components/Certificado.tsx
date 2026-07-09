@@ -84,8 +84,6 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         ref={certificadoRef}
         className="relative w-full max-w-lg aspect-[1.414/1] bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg border-8 border-amber-200 p-8 flex flex-col items-center justify-center text-center overflow-hidden shadow-sm"
       >
-        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#d97706 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
-        
         <Award className="w-16 h-16 text-amber-500 mb-2 drop-shadow-sm" />
         
         <h2 className="text-3xl font-extrabold text-amber-700 uppercase tracking-widest mb-1" style={{ fontFamily: 'var(--font-baloo)' }}>

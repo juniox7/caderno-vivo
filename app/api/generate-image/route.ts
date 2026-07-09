@@ -31,6 +31,9 @@ export async function POST(req: Request) {
     const { interesse1, interesse2, estiloImagem, promptLivre } = parsed.data;
 
     const quota = await checkAndIncrementQuota('imagem');
+    if (!quota.allowed) {
+      return NextResponse.json({ error: quota.error }, { status: 403 });
+    }
 
     // Traduz e Otimiza o prompt com Gemini
     const systemInstruction = `You are an expert prompt engineer for Stable Diffusion/Flux. 
