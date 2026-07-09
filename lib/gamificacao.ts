@@ -11,12 +11,18 @@ export interface UserStats {
     arvoreNivel: number;
     animais: string[]; // 'vaca', 'cachorro', 'galinha'
   };
-  // Novas métricas para Badges:
+  conquistas: string[];
+  historicoGeral: {
+    totalAtividades: number;
+    totalSementesGanhas: number;
+    diasSeguidos: number;
+    ultimaAtividade: string | null;
+  };
+  redeemedCodes: string[];
   atividadesGeradas: number;
   historiasGeradas: number;
   labirintosGerados: number;
   cacasGerados: number;
-  conquistas: string[]; // IDs das conquistas desbloqueadas
   onboardingCompleted: boolean;
 }
 
@@ -29,11 +35,18 @@ export const DEFAULT_STATS: UserStats = {
     arvoreNivel: 0, // 0 = sem árvore
     animais: [],
   },
+  conquistas: [],
+  historicoGeral: {
+    totalAtividades: 0,
+    totalSementesGanhas: 0,
+    diasSeguidos: 0,
+    ultimaAtividade: null,
+  },
+  redeemedCodes: [],
   atividadesGeradas: 0,
   historiasGeradas: 0,
   labirintosGerados: 0,
   cacasGerados: 0,
-  conquistas: [],
   onboardingCompleted: false
 };
 
@@ -219,17 +232,83 @@ export function checkBadges(stats: UserStats) {
   }
 }
 
-export function registrarAtividade(tipo: 'historia' | 'caca_palavras' | 'labirinto') {
+export const registrarAtividade = (tipo: string) => {
   const stats = getStats();
-  stats.atividadesGeradas = (stats.atividadesGeradas || 0) + 1;
   
-  if (tipo === 'historia') stats.historiasGeradas = (stats.historiasGeradas || 0) + 1;
-  else if (tipo === 'caca_palavras') stats.cacasGerados = (stats.cacasGerados || 0) + 1;
-  else if (tipo === 'labirinto') stats.labirintosGerados = (stats.labirintosGerados || 0) + 1;
+  // Atualiza histórico
+  const hoje = new Date().toISOString().split('T')[0];
+  const ultima = stats.historicoGeral.ultimaAtividade;
   
+  if (ultima !== hoje) {
+    if (ultima === new Date(Date.now() - 86400000).toISOString().split('T')[0]) {
+      stats.historicoGeral.diasSeguidos += 1;
+    } else {
+      stats.historicoGeral.diasSeguidos = 1;
+    }
+    stats.historicoGeral.ultimaAtividade = hoje;
+  }
+  
+  stats.historicoGeral.totalAtividades += 1;
+
+  // Lógica de Conquistas (Lote 3)
+  if (!stats.conquistas) stats.conquistas = [];
+  
+  if (stats.historicoGeral.totalAtividades >= 1 && !stats.conquistas.includes('aventureiro_iniciante')) {
+    stats.conquistas.push('aventureiro_iniciante');
+  }
+  if (stats.historicoGeral.diasSeguidos >= 3 && !stats.conquistas.includes('mestre_frequencia')) {
+    stats.conquistas.push('mestre_frequencia');
+  }
+  if (tipo === 'labirinto' && !stats.conquistas.includes('desbravador_labirintos')) {
+    stats.conquistas.push('desbravador_labirintos');
+  }
+  if (tipo === 'caca_palavras' && !stats.conquistas.includes('olho_aguia')) {
+    stats.conquistas.push('olho_aguia');
+  }
+  if (tipo === 'historia' && !stats.conquistas.includes('pequeno_leitor')) {
+    stats.conquistas.push('pequeno_leitor');
+  }
+
   saveStats(stats);
-  checkBadges(stats);
-}
+};
+
+export const gerarCodigoMagico = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  // Save to valid codes in local storage
+  const validCodesStr = localStorage.getItem('cadernoVivo_validCodes');
+  const validCodes = validCodesStr ? JSON.parse(validCodesStr) : [];
+  validCodes.push(code);
+  localStorage.setItem('cadernoVivo_validCodes', JSON.stringify(validCodes));
+  
+  return code;
+};
+
+export const resgatarCodigo = (codigo: string): { success: boolean; message: string } => {
+  const stats = getStats();
+  const validCodesStr = localStorage.getItem('cadernoVivo_validCodes');
+  const validCodes = validCodesStr ? JSON.parse(validCodesStr) : [];
+
+  if (!stats.redeemedCodes) stats.redeemedCodes = [];
+
+  if (stats.redeemedCodes.includes(codigo)) {
+    return { success: false, message: 'Este código já foi resgatado!' };
+  }
+
+  if (validCodes.includes(codigo)) {
+    stats.redeemedCodes.push(codigo);
+    stats.sementes += 10;
+    stats.historicoGeral.totalSementesGanhas += 10;
+    saveStats(stats);
+    return { success: true, message: 'Código validado! Você ganhou +10 Sementes! 🌱' };
+  }
+
+  return { success: false, message: 'Código inválido! Verifique se digitou corretamente.' };
+};
 
 export function concluirOnboarding() {
   const stats = getStats();

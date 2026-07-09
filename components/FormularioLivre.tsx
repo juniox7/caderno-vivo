@@ -31,6 +31,8 @@ import PreviewAtividade from './PreviewAtividade';
 import { toast } from 'sonner';
 import CacaPalavras from './CacaPalavras';
 import Labirinto from './Labirinto';
+import JogoDaForca from './JogoDaForca';
+import JogoMemoria from './JogoMemoria';
 import { registrarAtividade } from '@/lib/gamificacao';
 import LoadingMascote from './LoadingMascote';
 
@@ -55,7 +57,7 @@ export default function FormularioLivre() {
   const [formatoResposta, setFormatoResposta] = useState<'escrita' | 'multipla_escolha' | 'sem_pergunta'>('escrita');
   const [showSugestoes1, setShowSugestoes1] = useState(false);
   const [showSugestoes2, setShowSugestoes2] = useState(false);
-  const [tipoAtividade, setTipoAtividade] = useState<'historia' | 'caca_palavras' | 'labirinto'>('historia');
+  const [tipoAtividade, setTipoAtividade] = useState<'historia' | 'caca_palavras' | 'labirinto' | 'forca' | 'memoria'>('historia');
   const [puzzleGerados, setPuzzleGerados] = useState<any[]>([]);
   
   const [gerarImagens, setGerarImagens] = useState(false);
@@ -387,10 +389,33 @@ export default function FormularioLivre() {
                 <button
                   type="button"
                   onClick={() => setTipoAtividade('labirinto')}
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
                     tipoAtividade === 'labirinto' ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
                   }`}
-                >🌀 Labirinto</button>
+                >
+                  <span className="text-2xl">🌀</span>
+                  <span>Labirinto</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipoAtividade('forca')}
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
+                    tipoAtividade === 'forca' ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
+                  }`}
+                >
+                  <span className="text-2xl">🅰️</span>
+                  <span>Forca</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipoAtividade('memoria')}
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
+                    tipoAtividade === 'memoria' ? 'bg-primary-50 border-primary-300 text-primary-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
+                  }`}
+                >
+                  <span className="text-2xl">🧠</span>
+                  <span>Memória</span>
+                </button>
               </div>
             </div>
 

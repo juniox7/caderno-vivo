@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getStats, comprarItem, UserStats, adicionarSementes } from '@/lib/gamificacao';
+import { getStats, comprarItem, UserStats, adicionarSementes, resgatarCodigo } from '@/lib/gamificacao';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Store, Lock, Sparkles, ArrowLeft, Ticket } from 'lucide-react';
@@ -61,12 +61,15 @@ export default function Fazendinha() {
 
     setResgatando(true);
     setTimeout(() => {
-      // MVP: Accepts any 6-char string, giving 10 seeds
-      adicionarSementes(10);
-      setStats(getStats());
-      setCodigo('');
+      const result = resgatarCodigo(codigo);
+      if (result.success) {
+        setStats(getStats());
+        setCodigo('');
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
       setResgatando(false);
-      toast.success('Código validado! Você ganhou +10 Sementes! 🌱');
     }, 1000);
   };
 

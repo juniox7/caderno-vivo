@@ -33,6 +33,8 @@ import { registrarAtividade } from '@/lib/gamificacao';
 import { toast } from 'sonner';
 import CacaPalavras from './CacaPalavras';
 import Labirinto from './Labirinto';
+import JogoDaForca from './JogoDaForca';
+import JogoMemoria from './JogoMemoria';
 import LoadingMascote from './LoadingMascote';
 
 export default function FormularioProfessor() {
@@ -55,7 +57,7 @@ export default function FormularioProfessor() {
   const [nivel, setNivel] = useState<NivelDificuldade>('medio');
   
   // Puzzles
-  const [tipoAtividade, setTipoAtividade] = useState<'historia' | 'caca_palavras' | 'labirinto'>('historia');
+  const [tipoAtividade, setTipoAtividade] = useState<'historia' | 'caca_palavras' | 'labirinto' | 'forca' | 'memoria'>('historia');
   const [puzzleGerados, setPuzzleGerados] = useState<any[]>([]);
   const [qtdPuzzles, setQtdPuzzles] = useState(1);
 
@@ -329,28 +331,57 @@ export default function FormularioProfessor() {
                 <Wand2 className="w-4 h-4 text-amber-500" />
                 Tipo de Atividade
               </label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 <button
                   type="button"
                   onClick={() => setTipoAtividade('historia')}
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
                     tipoAtividade === 'historia' ? 'bg-amber-50 border-amber-300 text-amber-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
                   }`}
-                >📖 História</button>
+                >
+                  <span className="text-2xl">📖</span>
+                  <span>História</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setTipoAtividade('caca_palavras')}
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
                     tipoAtividade === 'caca_palavras' ? 'bg-amber-50 border-amber-300 text-amber-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
                   }`}
-                >🔍 Caça-Palavras</button>
+                >
+                  <span className="text-2xl">🔍</span>
+                  <span>Caça-Palavras</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setTipoAtividade('labirinto')}
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all border ${
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
                     tipoAtividade === 'labirinto' ? 'bg-amber-50 border-amber-300 text-amber-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
                   }`}
-                >🌀 Labirinto</button>
+                >
+                  <span className="text-2xl">🌀</span>
+                  <span>Labirinto</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipoAtividade('forca')}
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
+                    tipoAtividade === 'forca' ? 'bg-amber-50 border-amber-300 text-amber-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
+                  }`}
+                >
+                  <span className="text-2xl">🅰️</span>
+                  <span>Forca</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipoAtividade('memoria')}
+                  className={`p-3 rounded-xl border text-sm font-bold transition-all flex flex-col items-center gap-2 ${
+                    tipoAtividade === 'memoria' ? 'bg-amber-50 border-amber-300 text-amber-700 shadow-sm' : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
+                  }`}
+                >
+                  <span className="text-2xl">🧠</span>
+                  <span>Memória</span>
+                </button>
               </div>
             </div>
 
@@ -787,6 +818,18 @@ export default function FormularioProfessor() {
                       mazeGrid={puzzle.mazeGrid}
                       inicio={puzzle.inicio}
                       fim={puzzle.fim}
+                      tema={`${puzzle.tema} #${index + 1}`}
+                    />
+                  )}
+                  {puzzle.tipo === 'forca' && (
+                    <JogoDaForca 
+                      palavras={puzzle.palavras || []}
+                      tema={`${puzzle.tema} #${index + 1}`}
+                    />
+                  )}
+                  {puzzle.tipo === 'memoria' && (
+                    <JogoMemoria 
+                      cards={puzzle.cards || []}
                       tema={`${puzzle.tema} #${index + 1}`}
                     />
                   )}

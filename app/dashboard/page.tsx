@@ -4,9 +4,16 @@ import AtividadeDiaria from '@/components/AtividadeDiaria';
 import SeletorModo from '@/components/SeletorModo';
 import StreakTracker from '@/components/StreakTracker';
 import PainelFazendinha from '@/components/PainelFazendinha';
-import { Printer, Sparkles, Brain, Zap } from 'lucide-react';
+import { Printer, Sparkles, Brain, Zap, Activity } from 'lucide-react';
+import { getStats, UserStats } from '@/lib/gamificacao';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
+  const [stats, setStats] = useState<UserStats | null>(null);
+
+  useEffect(() => {
+    setStats(getStats());
+  }, []);
   return (
     <>
       <Header />
@@ -61,6 +68,33 @@ export default function Home() {
         {/* Gamification / Streak Tracker & Fazendinha */}
         <section className="w-full max-w-3xl mx-auto px-4 pb-4">
           <StreakTracker />
+          
+          {stats && (
+            <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-2xl p-6 border border-surface-200 shadow-sm mb-6 flex flex-col md:flex-row gap-6 items-center justify-between">
+              <div>
+                <h3 className="font-bold text-lg text-surface-800 flex items-center gap-2 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>
+                  <Activity className="w-5 h-5 text-primary-500" />
+                  Boletim de Desempenho
+                </h3>
+                <p className="text-surface-500 text-sm">Acompanhe seu progresso e atividades realizadas!</p>
+              </div>
+              <div className="flex gap-4">
+                <div className="text-center p-3 bg-primary-50 rounded-xl border border-primary-100 min-w-[100px]">
+                  <div className="text-2xl font-bold text-primary-600">{stats.historicoGeral.totalAtividades}</div>
+                  <div className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Atividades</div>
+                </div>
+                <div className="text-center p-3 bg-emerald-50 rounded-xl border border-emerald-100 min-w-[100px]">
+                  <div className="text-2xl font-bold text-emerald-600">+{stats.historicoGeral.totalSementesGanhas}</div>
+                  <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Sementes Totais</div>
+                </div>
+                <div className="text-center p-3 bg-amber-50 rounded-xl border border-amber-100 min-w-[100px]">
+                  <div className="text-2xl font-bold text-amber-600">{stats.conquistas.length}</div>
+                  <div className="text-xs font-semibold text-amber-400 uppercase tracking-wide">Medalhas</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <PainelFazendinha />
         </section>
 

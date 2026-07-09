@@ -1,22 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  ArrowLeft,
-  Download,
-  Lightbulb,
-  CheckCircle2,
-  RotateCcw,
-  Share2,
-  Printer,
-  Volume2,
-  Mic,
-} from 'lucide-react';
+import { Sparkles, ArrowLeft, Printer, Download, RotateCcw, Volume2, Mic, VolumeX, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { AtividadeGerada } from '@/lib/types';
-import { adicionarSementes, removerSementes, registrarAtividade } from '@/lib/gamificacao';
+import { adicionarSementes, removerSementes, registrarAtividade, gerarCodigoMagico } from '@/lib/gamificacao';
 import { playSound } from '@/lib/audio';
 import { toast } from 'sonner';
+import Certificado from './Certificado';
 
 
 interface PreviewAtividadeProps {
@@ -51,8 +42,10 @@ export default function PreviewAtividade({ atividade, modo, onRefazer }: Preview
       
       const { pdf } = await import('@react-pdf/renderer');
       const { CadernoPDF } = await import('@/lib/pdf-generator');
+      
+      const secretCode = gerarCodigoMagico();
 
-      const blob = await pdf(<CadernoPDF atividade={atividade} />).toBlob();
+      const blob = await pdf(<CadernoPDF atividade={atividade} secretCode={secretCode} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -498,6 +491,14 @@ export default function PreviewAtividade({ atividade, modo, onRefazer }: Preview
                       {sementeGanhas > 0 ? '+' : ''}{sementeGanhas % 1 === 0 ? sementeGanhas : sementeGanhas.toFixed(2)} Sementes
                     </span>!
                   </p>
+                  
+                  {sementeGanhas >= 0 && (
+                    <Certificado 
+                      nome="Pequeno(a) Explorador(a)" 
+                      tema={atividade.titulo} 
+                      sementes={sementeGanhas} 
+                    />
+                  )}
                 </div>
               )
             )}
