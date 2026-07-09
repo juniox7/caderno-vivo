@@ -316,7 +316,7 @@ export default function PreviewAtividade({ atividade, modo, onRefazer }: Preview
                   <span className="w-2 h-2 rounded-full bg-primary-500" />
                   {atv.tipo.replace(/_/g, ' ')}
                 </div>
-                {atv.tipo === 'historia' && (
+                {(atv.tipo.toLowerCase().includes('historia') || atv.tipo.toLowerCase().includes('história')) && (
                   <button
                     onClick={() => handleOuvirHistoria(atv.enunciado)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${isSpeaking ? 'bg-primary-50 text-primary-600 border-primary-200 animate-pulse' : 'bg-white dark:bg-surface-100 dark:text-surface-800 text-surface-500 border-surface-200 hover:bg-surface-50'}`}
