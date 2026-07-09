@@ -824,8 +824,6 @@ export default function FormularioLivre() {
                 />
               </div>
             )}
-
-            )}
             
             {loading ? (
               <LoadingMascote 
