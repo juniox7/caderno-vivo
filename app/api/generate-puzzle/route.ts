@@ -52,10 +52,11 @@ export async function POST(req: Request) {
 
     if (tipoAtividade === 'caca_palavras' || tipoAtividade === 'forca') {
       const isForca = tipoAtividade === 'forca';
+      const randomSeed = Math.floor(Math.random() * 1000000);
       const prompt = isForca 
-        ? `Gere uma lista de 5 palavras sem acentos ou caracteres especiais relacionadas ao tema "${tema}" para um jogo de Forca. Considere o nível de dificuldade como: ${dificuldade.toUpperCase()}. Retorne APENAS um JSON contendo um array de strings chamado "palavras".`
-        : `Gere uma lista de ${palavrasConfig.qtd} palavras curtas e simples (sem acentos ou caracteres especiais) relacionadas ao tema "${tema}". 
-As palavras devem ter no máximo ${palavrasConfig.tamanho} letras cada. Considere o nível de dificuldade como: ${dificuldade.toUpperCase()}.
+        ? `[SEED: ${randomSeed}] Gere uma lista de 5 palavras INCOMUNS e DIFERENTES, sem acentos ou caracteres especiais, relacionadas ao tema "${tema}" para um jogo de Forca. Não repita palavras clichês. Considere o nível de dificuldade como: ${dificuldade.toUpperCase()}. Retorne APENAS um JSON contendo um array de strings chamado "palavras".`
+        : `[SEED: ${randomSeed}] Gere uma lista de ${palavrasConfig.qtd} palavras curtas, simples, CRIATIVAS E VARIADAS (sem acentos ou caracteres especiais) relacionadas ao tema "${tema}". 
+As palavras devem ter no máximo ${palavrasConfig.tamanho} letras cada. Considere o nível de dificuldade como: ${dificuldade.toUpperCase()}. Evite respostas muito óbvias ou comuns.
 Retorne APENAS um JSON válido contendo um array de strings chamado "palavras". Exemplo: {"palavras": ["GATO", "CACHORRO", "VACA"]}`;
 
       const response = await ai.models.generateContent({
@@ -78,7 +79,9 @@ Retorne APENAS um JSON válido contendo um array de strings chamado "palavras". 
       }
     } 
     else if (tipoAtividade === 'labirinto') {
-      const prompt = `Sugira dois emojis que representem o tema "${tema}" para serem o ponto de partida e o objetivo de um labirinto.
+      const randomSeed = Math.floor(Math.random() * 1000000);
+      const prompt = `[SEED: ${randomSeed}] Sugira dois emojis CRIATIVOS, DIFERENTES E POUCO ÓBVIOS que representem o tema "${tema}" para serem o ponto de partida e o objetivo de um labirinto.
+Evite usar sempre os mesmos emojis para este tema. Explore variações divertidas!
 Exemplo para "Astronauta": {"inicio": "👨‍🚀", "fim": "🚀"}
 Retorne APENAS um JSON válido.`;
 
@@ -99,8 +102,12 @@ Retorne APENAS um JSON válido.`;
       return NextResponse.json({ tipo: 'labirinto', tema, inicio, fim, mazeGrid });
     }
     else if (tipoAtividade === 'memoria') {
-      const prompt = `Retorne uma lista de 8 emojis diferentes que representem o tema "${tema}".
-Retorne APENAS um JSON válido contendo um array de strings chamado "emojis". Exemplo: {"emojis": ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼"]}`;
+      const numPares = 8;
+      const randomSeed = Math.floor(Math.random() * 1000000);
+      const prompt = `[SEED: ${randomSeed}] Sugira uma lista com EXATAMENTE ${numPares} emojis diferentes, altamente VARIADOS E CRIATIVOS, relacionados ao tema "${tema}". 
+Evite emojis genéricos ou clichês; misture elementos divertidos do tema.
+Retorne APENAS um JSON válido contendo um array de strings (emojis) chamado "emojis". 
+Exemplo para "Animais": {"emojis": ["🐶", "🐱", "🐰", "🦊", "🐻", "🐼", "🦁", "🐯"]}`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',

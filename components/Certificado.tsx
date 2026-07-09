@@ -21,7 +21,9 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
     try {
       const canvas = await html2canvas(certificadoRef.current, {
         scale: 2,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        allowTaint: true
       });
       const url = canvas.toDataURL('image/png');
       const link = document.createElement('a');
@@ -42,7 +44,9 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
     try {
       const canvas = await html2canvas(certificadoRef.current, {
         scale: 2,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        useCORS: true,
+        allowTaint: true
       });
       canvas.toBlob(async (blob) => {
         if (!blob) return;
