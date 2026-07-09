@@ -38,6 +38,9 @@ export async function POST(req: Request) {
     const { nomes, idade, focosSelecionados, interesse1, interesse2, formatoResposta, promptLivre, nivel } = parsed.data;
 
     const quota = await checkAndIncrementQuota('texto');
+    if (!quota.allowed) {
+      return NextResponse.json({ error: quota.error }, { status: quota.status });
+    }
 
     // Configuração dos nomes
     const hasNomes = Array.isArray(nomes) && nomes.length > 0;

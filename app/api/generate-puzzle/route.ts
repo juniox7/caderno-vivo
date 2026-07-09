@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     const quota = await checkAndIncrementQuota(tipoAtividade);
     if (!quota.allowed) {
-      return NextResponse.json({ error: quota.error }, { status: quota.status });
+      return NextResponse.json({ error: quota.error }, { status: 403 });
     }
 
     let tamanhoGrid = 12; // medio default
