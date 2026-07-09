@@ -1,12 +1,12 @@
 import { auth, clerkClient } from '@clerk/nextjs/server';
 
-export type ActivityType = 'texto' | 'caca_palavras' | 'labirinto' | 'imagem';
+export type ActivityType = 'texto' | 'caca_palavras' | 'labirinto' | 'imagem' | 'forca' | 'memoria';
 
 export const PLAN_LIMITS = {
-  FREE: { texto: 5, caca_palavras: 2, labirinto: 2, imagem: 0 },
-  BASIC: { texto: 30, caca_palavras: 15, labirinto: 15, imagem: 2 },
-  PREMIUM: { texto: 100, caca_palavras: 50, labirinto: 50, imagem: 999999 },
-  TURBO: { texto: 999999, caca_palavras: 999999, labirinto: 999999, imagem: 999999 },
+  FREE: { texto: 5, caca_palavras: 2, labirinto: 2, forca: 2, memoria: 2, imagem: 0 },
+  BASIC: { texto: 30, caca_palavras: 15, labirinto: 15, forca: 15, memoria: 15, imagem: 2 },
+  PREMIUM: { texto: 100, caca_palavras: 50, labirinto: 50, forca: 50, memoria: 50, imagem: 999999 },
+  TURBO: { texto: 999999, caca_palavras: 999999, labirinto: 999999, forca: 999999, memoria: 999999, imagem: 999999 },
 };
 
 type PlanTier = keyof typeof PLAN_LIMITS;
