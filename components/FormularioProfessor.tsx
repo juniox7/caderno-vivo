@@ -711,7 +711,7 @@ export default function FormularioProfessor() {
             {loading ? (
               <LoadingMascote 
                 nomes={[`a turma da ${nomeProfessor}`]} 
-                interesse={interesse1} 
+                interesse={objetivoPedagogico} 
                 focos={focosSelecionados.map(f => f.label)} 
               />
             ) : (

@@ -189,7 +189,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
   };
 
   const toggleDitado = (qId: string) => {
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast.error('Ditado por voz não suportado neste navegador. Use o Chrome ou Edge.');
       return;
