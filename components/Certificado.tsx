@@ -40,48 +40,18 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
   };
 
   const handleShare = async () => {
-    if (shareFile) {
-      // Step 2: Share immediately (preserves user gesture)
-      try {
-        if ('share' in navigator && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
-          await navigator.share({
-            title: 'Meu Certificado no Caderno Vivo',
-            text: `Olha só o certificado que ganhei sobre ${tema}! 🚀`,
-            files: [shareFile]
-          });
-        } else {
-          toast.error('Compartilhamento de arquivo não suportado. Baixe a imagem!');
-        }
-      } catch (err) {
-        console.log('Compartilhamento cancelado', err);
-      }
-      return;
-    }
-
-    // Step 1: Generate the file
-    if (!certificadoRef.current) return;
-    setIsExporting(true);
     try {
-      const canvas = await html2canvas(certificadoRef.current, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: true
-      });
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          setIsExporting(false);
-          return;
-        }
-        const file = new File([blob], 'certificado.png', { type: 'image/png' });
-        setShareFile(file);
-        setIsExporting(false);
-        toast.success('Pronto! Clique em compartilhar novamente.');
-      });
+      if ('share' in navigator) {
+        await navigator.share({
+          title: 'Meu Certificado no Caderno Vivo',
+          text: `Olha só o certificado que ganhei sobre ${tema} no Caderno Vivo! 🚀 Venha brincar também!`,
+          url: window.location.origin
+        });
+      } else {
+        toast.error('Compartilhamento não suportado neste navegador. Use o botão de baixar!');
+      }
     } catch (err) {
-      console.error(err);
-      toast.error('Erro ao preparar a imagem');
-      setIsExporting(false);
+      console.log('Compartilhamento cancelado', err);
     }
   };
 
@@ -92,7 +62,7 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         ref={certificadoRef}
         className="relative w-full max-w-lg aspect-[1.414/1] bg-gradient-to-br from-yellow-50 to-amber-50 rounded-lg border-8 border-amber-200 p-8 flex flex-col items-center justify-center text-center overflow-hidden shadow-sm"
       >
-        <Award className="w-16 h-16 text-amber-500 mb-2 drop-shadow-sm" />
+        <Award width={64} height={64} className="w-16 h-16 text-amber-500 mb-2" />
         
         <h2 className="text-3xl font-extrabold text-amber-700 uppercase tracking-widest mb-1" style={{ fontFamily: 'var(--font-baloo)' }}>
           Certificado de Conclusão
@@ -108,9 +78,9 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         </p>
 
         <div className="mt-6 flex items-center gap-2 text-amber-500 font-bold bg-white/60 px-4 py-2 rounded-full shadow-inner border border-amber-100">
-          <Star className="fill-amber-500 w-5 h-5" />
+          <Star width={20} height={20} className="fill-amber-500 w-5 h-5" />
           <span>+{Math.max(0, sementes)} Sementes Ganhas</span>
-          <Star className="fill-amber-500 w-5 h-5" />
+          <Star width={20} height={20} className="fill-amber-500 w-5 h-5" />
         </div>
         
         <div className="absolute bottom-4 left-6 text-xs font-bold text-amber-800/40">
@@ -136,11 +106,10 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         {typeof navigator !== 'undefined' && 'share' in navigator && (
           <button 
             onClick={handleShare}
-            disabled={isExporting}
             className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all bg-surface-100 text-surface-700 hover:bg-surface-200"
           >
             <Share2 className="w-5 h-5" />
-            {isExporting ? 'Preparando...' : shareFile ? 'Compartilhar Agora!' : 'Compartilhar'}
+            Compartilhar
           </button>
         )}
       </div>
