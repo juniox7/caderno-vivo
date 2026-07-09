@@ -407,11 +407,27 @@ export default function PreviewAtividade({ atividade, modo, onRefazer }: Preview
                             </div>
                           )
                         ) : (
-                          <div className="border-b-2 border-dashed border-surface-200 py-4 mt-2">
-                            <p className="text-[10px] text-surface-300 uppercase tracking-widest">
-                              Espaço para resposta
-                            </p>
-                          </div>
+                          q.opcoes && q.opcoes.length > 0 ? (
+                            <div className="space-y-3 mt-4 mb-4">
+                              {q.opcoes.map((opcao, i) => {
+                                const letter = String.fromCharCode(65 + i); // A, B, C, D
+                                return (
+                                  <div key={opcao} className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full border-2 border-surface-300 flex items-center justify-center font-bold text-surface-400">
+                                      {letter}
+                                    </div>
+                                    <span className="text-surface-700">{opcao}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="border-b-2 border-dashed border-surface-300 py-4 mt-4">
+                              <p className="text-[10px] text-surface-400 uppercase tracking-widest">
+                                Espaço para resposta
+                              </p>
+                            </div>
+                          )
                         )}
                       </div>
 

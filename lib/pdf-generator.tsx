@@ -165,9 +165,22 @@ export const CadernoPDF = ({ atividade, secretCode }: CadernoPDFProps) => {
                   <Text style={styles.numeroCírculo}>{qIdx + 1}</Text>
                   <Text style={styles.pergunta}>{q.pergunta}</Text>
                 </View>
-                {/* 2 linhas para resposta */}
-                <View style={styles.linhaResposta} />
-                <View style={styles.linhaResposta} />
+                
+                {q.opcoes && q.opcoes.length > 0 ? (
+                  <View style={{ marginLeft: 30, marginTop: 8, marginBottom: 12 }}>
+                    {q.opcoes.map((opcao, oIdx) => (
+                      <View key={oIdx} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                        <View style={{ width: 14, height: 14, borderRadius: 7, borderWidth: 1, borderColor: '#94a3b8', marginRight: 8 }} />
+                        <Text style={{ fontSize: 13, color: '#475569' }}>{opcao}</Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <>
+                    <View style={styles.linhaResposta} />
+                    <View style={styles.linhaResposta} />
+                  </>
+                )}
               </View>
             ))}
           </View>
