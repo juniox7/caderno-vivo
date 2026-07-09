@@ -14,6 +14,7 @@ interface CertificadoProps {
 export default function Certificado({ nome, tema, sementes }: CertificadoProps) {
   const certificadoRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [shareFile, setShareFile] = useState<File | null>(null);
 
   const handleDownload = async () => {
     if (!certificadoRef.current) return;
@@ -39,6 +40,25 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
   };
 
   const handleShare = async () => {
+    if (shareFile) {
+      // Step 2: Share immediately (preserves user gesture)
+      try {
+        if ('share' in navigator && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+          await navigator.share({
+            title: 'Meu Certificado no Caderno Vivo',
+            text: `Olha só o certificado que ganhei sobre ${tema}! 🚀`,
+            files: [shareFile]
+          });
+        } else {
+          toast.error('Compartilhamento de arquivo não suportado. Baixe a imagem!');
+        }
+      } catch (err) {
+        console.log('Compartilhamento cancelado', err);
+      }
+      return;
+    }
+
+    // Step 1: Generate the file
     if (!certificadoRef.current) return;
     setIsExporting(true);
     try {
@@ -48,31 +68,19 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
         useCORS: true,
         allowTaint: true
       });
-      canvas.toBlob(async (blob) => {
+      canvas.toBlob((blob) => {
         if (!blob) {
           setIsExporting(false);
           return;
         }
         const file = new File([blob], 'certificado.png', { type: 'image/png' });
-        try {
-          if ('share' in navigator && navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: 'Meu Certificado no Caderno Vivo',
-              text: `Olha só o certificado que ganhei sobre ${tema}! 🚀`,
-              files: [file]
-            });
-          } else {
-            toast.error('Compartilhamento não suportado. Baixe a imagem!');
-          }
-        } catch (shareErr) {
-          console.log('Compartilhamento cancelado ou falhou', shareErr);
-        } finally {
-          setIsExporting(false);
-        }
+        setShareFile(file);
+        setIsExporting(false);
+        toast.success('Pronto! Clique em compartilhar novamente.');
       });
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao gerar a imagem');
+      toast.error('Erro ao preparar a imagem');
       setIsExporting(false);
     }
   };
@@ -129,10 +137,10 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
           <button 
             onClick={handleShare}
             disabled={isExporting}
-            className="flex-1 py-3 rounded-xl bg-primary-500 text-white font-bold hover:bg-primary-600 shadow-md shadow-primary-200 transition-all active:scale-95 flex justify-center items-center gap-2 disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all bg-surface-100 text-surface-700 hover:bg-surface-200"
           >
             <Share2 className="w-5 h-5" />
-            Compartilhar
+            {isExporting ? 'Preparando...' : shareFile ? 'Compartilhar Agora!' : 'Compartilhar'}
           </button>
         )}
       </div>
