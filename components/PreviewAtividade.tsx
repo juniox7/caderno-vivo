@@ -22,9 +22,10 @@ import { toast } from 'sonner';
 interface PreviewAtividadeProps {
   atividade: AtividadeGerada;
   modo: string;
+  onRefazer?: () => void;
 }
 
-export default function PreviewAtividade({ atividade, modo }: PreviewAtividadeProps) {
+export default function PreviewAtividade({ atividade, modo, onRefazer }: PreviewAtividadeProps) {
   const [expandedDicas, setExpandedDicas] = useState<Set<string>>(new Set());
   const [expandedRespostas, setExpandedRespostas] = useState<Set<string>>(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
@@ -132,6 +133,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
       setConcluida(true);
       removerSementes(3);
       setSementesGanhas(-3);
+      playSound('desist');
       
       // Reveal all answers
       const allRespostas = new Set<string>();
@@ -510,11 +512,11 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                 {isDownloading ? 'Gerando PDF Profissional...' : 'Baixar PDF Oficial'}
               </button>
               <button 
-                onClick={() => window.location.reload()}
+                onClick={() => onRefazer ? onRefazer() : window.location.reload()}
                 className="flex-1 py-3.5 rounded-xl bg-white dark:bg-surface-100 dark:text-surface-800 border border-surface-200 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 text-surface-600 hover:text-surface-800 font-bold text-sm transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
-                Criar Outra Atividade
+                {onRefazer ? 'Refazer com Novo Tema' : 'Criar Outra Atividade'}
               </button>
             </div>
           </div>

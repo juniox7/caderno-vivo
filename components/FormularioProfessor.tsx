@@ -68,6 +68,21 @@ export default function FormularioProfessor() {
   const [atividadeGerada, setAtividadeGerada] = useState<AtividadeGerada | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('cadernoVivo_ultimoProfessor');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.nomeProfessor) setNomeProfessor(parsed.nomeProfessor);
+        if (parsed.turma) setTurma(parsed.turma);
+        if (parsed.focosSelecionados) setFocosSelecionados(parsed.focosSelecionados);
+        if (parsed.nivel) setNivel(parsed.nivel);
+        if (parsed.formatoResposta) setFormatoResposta(parsed.formatoResposta);
+        if (parsed.objetivoPedagogico) setObjetivoPedagogico(parsed.objetivoPedagogico);
+      }
+    } catch (e) {}
+  }, []);
+
   const preencherRecomendado = () => {
     const profsRandom = ['Prof. Maria', 'Prof. João', 'Profa. Ana', 'Prof. Carlos', 'Profa. Beatriz'];
     const turmasRandom = ['3º Ano A', '2º Ano B', '4º Ano C', '1º Ano A', '5º Ano B'];
@@ -128,6 +143,16 @@ export default function FormularioProfessor() {
 
     setLoading(true);
     try {
+      // Save form state for retry
+      sessionStorage.setItem('cadernoVivo_ultimoProfessor', JSON.stringify({
+        nomeProfessor,
+        turma,
+        focosSelecionados,
+        nivel,
+        formatoResposta,
+        objetivoPedagogico
+      }));
+
       if (tipoAtividade !== 'historia') {
         const puzzlesData = [];
         for (let i = 0; i < qtdPuzzles; i++) {
@@ -734,7 +759,11 @@ export default function FormularioProfessor() {
               </h2>
               <PreviewAtividade 
                 atividade={atividadeGerada} 
-                modo="professores"
+                modo="professor"
+                onRefazer={() => {
+                  setAtividadeGerada(null);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
               />
             </div>
           )}

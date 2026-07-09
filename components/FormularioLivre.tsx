@@ -852,6 +852,11 @@ export default function FormularioLivre() {
               <PreviewAtividade 
                 atividade={atividadeGerada} 
                 modo="livre"
+                onRefazer={() => {
+                  setAtividadeGerada(null);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  document.getElementById('interesse1-input')?.focus();
+                }}
               />
             </div>
           )}
