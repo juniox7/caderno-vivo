@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { Download, Share2, Award, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,20 +20,19 @@ export default function Certificado({ nome, tema, sementes }: CertificadoProps) 
     if (!certificadoRef.current) return;
     setIsExporting(true);
     try {
-      const canvas = await html2canvas(certificadoRef.current, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        useCORS: true,
-        allowTaint: true
+      const dataUrl = await toPng(certificadoRef.current, { 
+        cacheBust: true, 
+        pixelRatio: 2,
+        backgroundColor: '#ffffff'
       });
-      const url = canvas.toDataURL('image/png');
       const link = document.createElement('a');
       link.download = `Certificado-${nome.replace(/\s+/g, '-')}.png`;
-      link.href = url;
+      link.href = dataUrl;
       link.click();
       toast.success('Certificado baixado com sucesso!');
-    } catch (err) {
-      toast.error('Erro ao gerar certificado');
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Erro ao baixar certificado');
     } finally {
       setIsExporting(false);
     }
