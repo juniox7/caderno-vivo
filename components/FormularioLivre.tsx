@@ -67,12 +67,30 @@ export default function FormularioLivre() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const preencherRecomendado = () => {
-    setNomes(['Lucas']);
-    setIdade(8);
-    setAnoEscolar('3ano');
-    setFocosSelecionados([{id: 'matematica', label: 'Matemática', emoji: '🔢', qtd: 5}]);
-    setInteresse1('Futebol (Fluminense e Manchester City)');
-    setInteresse2('Música (Violão e teclado com teclas sensíveis ao toque)');
+    const nomesRandom = ['Leo', 'Malu', 'Pedro', 'Bia', 'João', 'Clara', 'Miguel', 'Alice', 'Enzo', 'Valentina'];
+    const nomeSorteado = nomesRandom[Math.floor(Math.random() * nomesRandom.length)];
+    
+    // Pegar foco aleatório (exceto o último que é 'livre')
+    const focoIndex = Math.floor(Math.random() * (FOCOS_PEDAGOGICOS.length - 1));
+    const focoSorteado = FOCOS_PEDAGOGICOS[focoIndex];
+    
+    // Pegar interesses aleatórios diferentes
+    const int1Index = Math.floor(Math.random() * SUGESTOES_INTERESSES.length);
+    let int2Index = Math.floor(Math.random() * SUGESTOES_INTERESSES.length);
+    while (int2Index === int1Index) {
+      int2Index = Math.floor(Math.random() * SUGESTOES_INTERESSES.length);
+    }
+    
+    const removeEmoji = (str: string) => str.replace(/^[\u{1F300}-\u{1FAD6}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]\s*/u, '');
+    
+    const idades = [5, 6, 7, 8, 9, 10];
+    const idadeSorteada = idades[Math.floor(Math.random() * idades.length)];
+
+    setNomes([nomeSorteado]);
+    setIdade(idadeSorteada);
+    setFocosSelecionados([{ id: focoSorteado.id, label: focoSorteado.label, emoji: focoSorteado.emoji, qtd: 5 }]);
+    setInteresse1(removeEmoji(SUGESTOES_INTERESSES[int1Index]));
+    setInteresse2(removeEmoji(SUGESTOES_INTERESSES[int2Index]));
   };
 
   const handleToggleFoco = (foco: typeof FOCOS_PEDAGOGICOS[0]) => {
