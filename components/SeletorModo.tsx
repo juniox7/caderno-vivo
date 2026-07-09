@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, LayoutGrid, GraduationCap, ArrowRight } from 'lucide-react';
+import { Sparkles, LayoutGrid, GraduationCap, ArrowRight, Gamepad2 } from 'lucide-react';
 import Link from 'next/link';
 
 const modos = [
@@ -46,6 +46,20 @@ const modos = [
     tagColor: 'bg-purple-50 text-purple-600 border-purple-200',
     href: '/criar/professores',
   },
+  {
+    id: 'jogos',
+    titulo: 'Modo Jogos',
+    descricao: 'Diversão rápida! Gere caça-palavras, labirintos e jogo da memória em segundos.',
+    emoji: '🎮',
+    icon: Gamepad2,
+    gradient: 'from-pink-50 to-rose-50/50',
+    border: 'border-pink-100 hover:border-pink-300',
+    iconBg: 'from-pink-500 to-rose-500',
+    shadow: 'hover:shadow-pink-100',
+    tag: '🕹️ Passatempo',
+    tagColor: 'bg-rose-50 text-rose-600 border-rose-200',
+    href: '/criar/jogos',
+  },
 ];
 
 export default function SeletorModo() {
@@ -66,7 +80,7 @@ export default function SeletorModo() {
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 stagger">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 stagger">
         {modos.map((modo) => {
           const Icon = modo.icon;
           return (
