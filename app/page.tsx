@@ -51,6 +51,10 @@ export default function LandingPage() {
               Criar Primeira Atividade
               <ArrowRight className="w-5 h-5" />
             </Link>
+            <Link href="/amostra" className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-surface-100 dark:text-surface-800 border-2 border-primary-200 text-primary-700 hover:bg-primary-50 font-bold text-lg rounded-2xl transition-all hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 text-amber-500" />
+              Ver Exemplo Agora
+            </Link>
           </div>
         </div>
       </section>

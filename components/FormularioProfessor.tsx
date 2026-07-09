@@ -33,6 +33,7 @@ import { registrarAtividade } from '@/lib/gamificacao';
 import { toast } from 'sonner';
 import CacaPalavras from './CacaPalavras';
 import Labirinto from './Labirinto';
+import LoadingMascote from './LoadingMascote';
 
 export default function FormularioProfessor() {
   const router = useRouter();
@@ -707,23 +708,22 @@ export default function FormularioProfessor() {
             )}
 
             {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading || !nomeProfessor.trim() || !turma.trim()}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-base transition-all hover:shadow-xl hover:shadow-amber-200 active:scale-[0.98] flex items-center justify-center gap-2.5"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Gerando para a turma...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  Gerar Atividades para a Turma
-                </>
-              )}
-            </button>
+            {loading ? (
+              <LoadingMascote 
+                nomes={[`a turma da ${nomeProfessor}`]} 
+                interesse={interesse1} 
+                focos={focosSelecionados.map(f => f.label)} 
+              />
+            ) : (
+              <button
+                type="submit"
+                disabled={!nomeProfessor.trim() || !turma.trim()}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-base transition-all hover:shadow-xl hover:shadow-amber-200 active:scale-[0.98] flex items-center justify-center gap-2.5"
+              >
+                <Sparkles className="w-5 h-5" />
+                Gerar Atividades para a Turma
+              </button>
+            )}
           </form>
           
           {/* Resultado Inline */}

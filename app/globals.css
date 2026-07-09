@@ -169,6 +169,12 @@ body {
   75% { transform: translateX(4px); }
 }
 
+@keyframes progressIndeterminate {
+  0% { transform: translateX(-100%) scaleX(0.2); }
+  50% { transform: translateX(0%) scaleX(0.5); }
+  100% { transform: translateX(100%) scaleX(0.2); }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease-out both;
 }
@@ -205,6 +211,10 @@ body {
 
 .animate-shake {
   animation: shake 0.4s ease-in-out;
+}
+
+.animate-progress-indeterminate {
+  animation: progressIndeterminate 1.5s infinite ease-in-out;
 }
 
 /* ---- Stagger children ---- */

@@ -9,10 +9,13 @@ import {
   RotateCcw,
   Share2,
   Printer,
+  Volume2,
+  Mic,
 } from 'lucide-react';
 import Link from 'next/link';
 import { AtividadeGerada } from '@/lib/types';
 import { adicionarSementes, removerSementes, registrarAtividade } from '@/lib/gamificacao';
+import { playSound } from '@/lib/audio';
 import { toast } from 'sonner';
 
 
@@ -32,6 +35,8 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
   const [sementeAnimacao, setSementeAnimacao] = useState(false);
   const [sementeGanhas, setSementesGanhas] = useState<number>(0);
   const [mensagemErro, setMensagemErro] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isDictatingFor, setIsDictatingFor] = useState<string | null>(null);
 
   const getTotalQuestoes = () => {
     return atividade.atividades.reduce((total, atv) => total + atv.questoes.length, 0);
@@ -117,6 +122,7 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
     adicionarSementes(pontosCalculados);
     setSementesGanhas(pontosCalculados);
     setSementeAnimacao(true);
+    playSound('complete');
     setTimeout(() => setSementeAnimacao(false), 2000);
   };
 
@@ -153,9 +159,74 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
       const next = new Set(expandedRespostas);
       next.add(qId);
       setExpandedRespostas(next);
+      playSound('correct');
     } else {
       setErrosOpcoes({ ...errosOpcoes, [qId]: opcao });
+      playSound('wrong');
     }
+  };
+
+  const handleOuvirHistoria = (texto: string) => {
+    if (!('speechSynthesis' in window)) {
+      toast.error('Seu navegador não suporta narração de voz.');
+      return;
+    }
+    
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(texto);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 0.9;
+    
+    utterance.onend = () => setIsSpeaking(false);
+    
+    window.speechSynthesis.speak(utterance);
+    setIsSpeaking(true);
+  };
+
+  const toggleDitado = (qId: string) => {
+    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error('Ditado por voz não suportado neste navegador. Use o Chrome ou Edge.');
+      return;
+    }
+
+    if (isDictatingFor === qId) {
+      setIsDictatingFor(null);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsDictatingFor(qId);
+      toast.success('Ouvindo... Pode falar a resposta!');
+    };
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setRespostas(prev => ({
+        ...prev,
+        [qId]: (prev[qId] ? prev[qId] + ' ' : '') + transcript
+      }));
+    };
+
+    recognition.onerror = () => {
+      setIsDictatingFor(null);
+    };
+
+    recognition.onend = () => {
+      setIsDictatingFor(null);
+    };
+
+    recognition.start();
   };
 
   return (
@@ -191,6 +262,25 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
             </button>
           </div>
         </div>
+        
+        {/* Barra de Progresso Emocional */}
+        {isInteractive && !concluida && (
+          <div className="max-w-3xl mx-auto mt-3 animate-fade-in">
+            <div className="h-4 bg-surface-200 rounded-full overflow-hidden relative border border-surface-300">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all duration-500 ease-out flex items-center justify-end pr-1"
+                style={{ width: `${Math.max(5, (Object.keys(respostas).length / getTotalQuestoes()) * 100)}%` }}
+              >
+                <span className="text-[10px] -ml-2 -mt-0.5 animate-bounce drop-shadow-sm">🚀</span>
+              </div>
+            </div>
+            <div className="text-center mt-1">
+              <span className="text-[10px] font-bold text-surface-500 uppercase tracking-widest">
+                Progresso: {Object.keys(respostas).length} de {getTotalQuestoes()}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 px-4 py-6">
@@ -219,11 +309,20 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
               className="rounded-2xl bg-white dark:bg-surface-100 dark:text-surface-800 border border-surface-200 overflow-hidden shadow-sm"
             >
               {/* Activity header */}
-              <div className="px-5 py-4 border-b border-surface-100 bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100">
+              <div className="px-5 py-4 border-b border-surface-100 bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-semibold text-primary-600 uppercase tracking-wider">
                   <span className="w-2 h-2 rounded-full bg-primary-500" />
                   {atv.tipo.replace(/_/g, ' ')}
                 </div>
+                {atv.tipo === 'historia' && (
+                  <button
+                    onClick={() => handleOuvirHistoria(atv.enunciado)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${isSpeaking ? 'bg-primary-50 text-primary-600 border-primary-200 animate-pulse' : 'bg-white dark:bg-surface-100 dark:text-surface-800 text-surface-500 border-surface-200 hover:bg-surface-50'}`}
+                  >
+                    <Volume2 className="w-3.5 h-3.5" />
+                    {isSpeaking ? 'Pausar Narração' : 'Ouvir História'}
+                  </button>
+                )}
               </div>
 
               {/* Enunciado */}
@@ -293,13 +392,24 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                               })}
                             </div>
                           ) : (
-                            <textarea
-                              disabled={concluida}
-                              placeholder="Digite sua resposta aqui..."
-                              value={respostas[qId] || ''}
-                              onChange={(e) => setRespostas({...respostas, [qId]: e.target.value})}
-                              className={`w-full mt-2 p-3 rounded-xl border transition-all text-surface-700 min-h-[80px] resize-none ${concluida ? 'bg-surface-100 border-surface-200 text-surface-500' : 'border-surface-200 bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 focus:bg-white dark:bg-surface-100 dark:text-surface-800 focus:ring-2 focus:ring-primary-500'}`}
-                            />
+                            <div className="relative mt-2">
+                              <textarea
+                                disabled={concluida}
+                                placeholder="Digite ou dite sua resposta..."
+                                value={respostas[qId] || ''}
+                                onChange={(e) => setRespostas({...respostas, [qId]: e.target.value})}
+                                className={`w-full p-3 pr-12 rounded-xl border transition-all text-surface-700 min-h-[80px] resize-none ${concluida ? 'bg-surface-100 border-surface-200 text-surface-500' : 'border-surface-200 bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 focus:bg-white dark:bg-surface-100 dark:text-surface-800 focus:ring-2 focus:ring-primary-500'}`}
+                              />
+                              {!concluida && (
+                                <button
+                                  onClick={() => toggleDitado(qId)}
+                                  title="Ditar Resposta"
+                                  className={`absolute right-3 bottom-3 p-2 rounded-full transition-colors ${isDictatingFor === qId ? 'bg-red-100 text-red-500 animate-pulse' : 'bg-surface-200 text-surface-500 hover:bg-surface-300'}`}
+                                >
+                                  <Mic className="w-4 h-4" />
+                                </button>
+                              )}
+                            </div>
                           )
                         ) : (
                           <div className="border-b-2 border-dashed border-surface-200 py-4 mt-2">
@@ -399,13 +509,13 @@ export default function PreviewAtividade({ atividade, modo }: PreviewAtividadePr
                 <Download className="w-4 h-4" />
                 {isDownloading ? 'Gerando PDF Profissional...' : 'Baixar PDF Oficial'}
               </button>
-              <Link
-                href="/"
+              <button 
+                onClick={() => window.location.reload()}
                 className="flex-1 py-3.5 rounded-xl bg-white dark:bg-surface-100 dark:text-surface-800 border border-surface-200 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 text-surface-600 hover:text-surface-800 font-bold text-sm transition-all shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
                 Criar Outra Atividade
-              </Link>
+              </button>
             </div>
           </div>
         </div>

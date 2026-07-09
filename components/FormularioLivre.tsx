@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Sparkles,
@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 import CacaPalavras from './CacaPalavras';
 import Labirinto from './Labirinto';
 import { registrarAtividade } from '@/lib/gamificacao';
+import LoadingMascote from './LoadingMascote';
 
 export default function FormularioLivre() {
   const router = useRouter();
@@ -65,6 +66,20 @@ export default function FormularioLivre() {
   
   const [atividadeGerada, setAtividadeGerada] = useState<AtividadeGerada | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('cadernoVivo_ultimoForm');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.nomes) setNomes(parsed.nomes);
+        if (parsed.idade) setIdade(parsed.idade);
+        if (parsed.focosSelecionados) setFocosSelecionados(parsed.focosSelecionados);
+        if (parsed.nivel) setNivel(parsed.nivel);
+        if (parsed.formatoResposta) setFormatoResposta(parsed.formatoResposta);
+      }
+    } catch (e) {}
+  }, []);
 
   const preencherRecomendado = () => {
     const nomesRandom = ['Leo', 'Malu', 'Pedro', 'Bia', 'João', 'Clara', 'Miguel', 'Alice', 'Enzo', 'Valentina'];
@@ -140,6 +155,15 @@ export default function FormularioLivre() {
     setLoading(true);
 
     try {
+      // Save form state for retry
+      sessionStorage.setItem('cadernoVivo_ultimoForm', JSON.stringify({
+        nomes: validNomes,
+        idade,
+        focosSelecionados,
+        nivel,
+        formatoResposta
+      }));
+
       if (tipoAtividade !== 'historia') {
         const puzzlesData = [];
         for (let i = 0; i < qtdPuzzles; i++) {
@@ -608,6 +632,7 @@ export default function FormularioLivre() {
               </label>
               <div className="relative">
                 <input
+                  id="interesse1-input"
                   type="text"
                   value={interesse1}
                   onChange={(e) => setInteresse1(e.target.value)}
@@ -800,24 +825,24 @@ export default function FormularioLivre() {
               </div>
             )}
 
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={loading || !isFormValid}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-base transition-all hover:shadow-xl hover:shadow-primary-200 active:scale-[0.98] flex items-center justify-center gap-2.5 mt-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Gerando atividade com IA...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  Gerar Meu Caderno
-                </>
-              )}
-            </button>
+            )}
+            
+            {loading ? (
+              <LoadingMascote 
+                nomes={nomes} 
+                interesse={interesse1} 
+                focos={focosSelecionados.map(f => f.label)} 
+              />
+            ) : (
+              <button
+                type="submit"
+                disabled={!isFormValid}
+                className="w-full py-4 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-base transition-all hover:shadow-xl hover:shadow-primary-200 active:scale-[0.98] flex items-center justify-center gap-2.5 mt-2"
+              >
+                <Sparkles className="w-5 h-5" />
+                Gerar Meu Caderno
+              </button>
+            )}
           </form>
           
           {/* Resultado Inline */}
@@ -857,6 +882,21 @@ export default function FormularioLivre() {
                   )}
                 </div>
               ))}
+              
+              <div className="flex justify-center mt-6">
+                <button
+                  onClick={() => {
+                    setPuzzleGerados([]);
+                    setAtividadeGerada(null);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    // Focus na div do interesse
+                    document.getElementById('interesse1-input')?.focus();
+                  }}
+                  className="px-6 py-3 rounded-xl bg-primary-100 text-primary-700 font-bold hover:bg-primary-200 transition-colors"
+                >
+                  Criar Outra Atividade
+                </button>
+              </div>
             </div>
           )}
         </div>
