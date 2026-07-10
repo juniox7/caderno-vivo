@@ -1,0 +1,51 @@
+========================================================================
+CONTEXTO E BRIEFING DO PRODUTO PARA IA DE MARKETING (COPYWRITING)
+========================================================================
+INSTRUÇÕES PARA A IA DE MARKETING:
+Leia todo este documento para entender profundamente o produto "Caderno Vivo". Use essas informações para criar criativos de tráfego pago (Facebook Ads, TikTok Ads), e-mail marketing, roteiros de Reels/TikTok e copys para landing pages.
+
+1. VISÃO GERAL DO PRODUTO (O QUE É?)
+Nome do Produto: Caderno Vivo (SaaS - Software as a Service).
+Definição: Uma plataforma web inteligente movida a Inteligência Artificial que transforma qualquer interesse hiper-específico de uma criança (ex: Homem-Aranha, Roblox, Princesas que andam de Skate) em atividades pedagógicas personalizadas, lúdicas e prontas para imprimir ou resolver na tela.
+
+2. PÚBLICO-ALVO (AVATARES)
+- Avatar 1: Pais e Mães de crianças de 4 a 12 anos. Estão exaustos, sem tempo, e frustrados com o vício dos filhos em telas (YouTube, TikTok, Jogos). Querem que o filho estude e se desenvolva, mas odeiam a "guerra" que é forçar a criança a fazer o dever de casa tradicional.
+- Avatar 2: Professores da Educação Infantil e Ensino Fundamental I. Precisam de materiais didáticos que prendam a atenção de salas de aula dispersas e alunos com TDAH.
+
+3. DORES QUE O PRODUTO RESOLVE (PAIN POINTS)
+- "Meu filho só quer saber de tela e celular." -> O Caderno Vivo usa as telas como "isca" para gerar PDFs que serão resolvidos no papel, ou usa a tela de forma ativa e educativa, não passiva.
+- "A lição de casa é entediante." -> A neurociência explica: se o problema de matemática fala sobre o "Minecraft", o cérebro da criança deixa de ver como obrigação e passa a ver como brincadeira.
+- "Livros de atividades e colorir são caros e acabam rápido." -> O Caderno Vivo é uma fonte infinita de livros de atividades novos, gerados em 5 segundos por uma fração do preço.
+
+4. FUNCIONALIDADES PRINCIPAIS (FEATURES)
+- Geração Mágica por IA: O pai digita literalmente QUALQUER TEMA (ex: "Dinossauros no Espaço") e a IA cria textos de interpretação, desafios lógicos, matemática e ciências baseados naquele tema exato.
+- Três Modos de Criação:
+  * Modo Livre: Liberdade total para digitar qualquer tema maluco.
+  * Modo Predefinido: Categorias rápidas (Espaço, Fundo do Mar, Esportes) para pais sem tempo.
+  * Modo Professor: Gera atividades incluindo o nome real de até 6 alunos da turma dentro das historinhas e problemas, prendendo a atenção da sala toda.
+- Jogos Interativos e Clássicos: A plataforma não gera só texto. Ela gera dinamicamente Caça-Palavras, Jogo da Forca e Labirintos baseados no tema escolhido.
+- Híbrido (Papel ou Tela): A atividade pode ser baixada em um PDF lindamente formatado (com opções A, B, C, D para marcar com caneta) ou pode ser resolvida de forma interativa direto no celular/tablet (com botões e feedback sonoro).
+- Desenhos para Colorir com IA: A plataforma gera páginas de colorir inéditas e exclusivas sob demanda.
+- Certificado de Conclusão: Ao terminar, a criança ganha um certificado lindo com o nome dela e o tema estudado, que pode ser baixado ou compartilhado direto no WhatsApp da família (Mecanismo de Viralização).
+
+5. SISTEMA DE GAMIFICAÇÃO (RETENÇÃO)
+- Moeda Virtual (Sementes): Cada questão resolvida rende "sementes" virtuais para a criança.
+- A Fazendinha: Uma aba do aplicativo onde a criança usa as sementes que ganhou estudando para plantar e evoluir plantinhas virtuais. Isso cria um ciclo de dopamina positivo que faz a criança pedir para estudar todos os dias para "regar a plantinha".
+
+6. MODELO DE NEGÓCIOS (PRICING)
+- Sementinha (Grátis): Isca digital. 5 atividades/mês para o pai ver a mágica acontecer. Sem geração de imagens.
+- Basic (R$ 27/mês): 30 atividades por mês.
+- Premium (R$ 39/mês - Mais Popular): 100 atividades por mês + Desenhos para Colorir ILIMITADOS com IA. O custo por atividade sai por apenas R$0,39.
+- Turbo (R$ 147/ano - Anual Ilimitado): Tudo liberado por um ano inteiro. Economia agressiva de mais de 60% para gerar caixa para a empresa.
+
+7. GATILHOS MENTAIS FORTES PARA USAR NAS COPYS
+- Curiosidade: "O que acontece se você misturar a lição de matemática com Roblox?"
+- Contraste: "A guerra para tirar o celular vs. Ele pedindo para imprimir atividades."
+- Prova Social: Foque em depoimentos de pais impressionados com a mudança de comportamento das crianças.
+- Economia: Comparar o custo do plano Premium mensal com a compra de 1 único livro de colorir na livraria.
+
+8. ÂNGULOS DE ANÚNCIO SUGERIDOS (HOOKS)
+- Hook 1 (Culpa da Tela): "Seu filho passa mais de 3h no celular por dia? Faça esse truque simples usando o personagem favorito dele..."
+- Hook 2 (Hack Financeiro): "Parei de gastar R$50 toda semana com livrinhos de colorir. Agora eu crio infinitos usando essa IA brasileira..."
+- Hook 3 (Desempenho Escolar): "Como fazer uma criança de 7 anos implorar para fazer contas de matemática (O truque do Homem-Aranha)."
+========================================================================

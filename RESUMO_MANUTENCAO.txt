@@ -1,0 +1,32 @@
+======================================================
+RESUMO DE MANUTENÇÕES E MELHORIAS - CADERNO VIVO
+======================================================
+Data da Manutenção: Hoje
+
+Abaixo estão todas as correções de bugs e novas funcionalidades implementadas no sistema:
+
+1. CORREÇÃO DA REPETIÇÃO NOS JOGOS (CAÇA-PALAVRAS, FORCA, LABIRINTO)
+- Problema: A Inteligência Artificial estava gerando as mesmas palavras ou os mesmos emojis repetidos em sequência.
+- Solução: Foi adicionada uma "Semente de Aleatoriedade" (Random Seed) forçada na chamada da API do Gemini para garantir que toda geração seja 100% inédita, mesmo se o tema for repetido.
+
+2. CORREÇÃO DO BOTÃO "COMPARTILHAR" O CERTIFICADO
+- Problema: O botão falhava ao tentar compartilhar o arquivo da imagem em muitos celulares e PCs por bloqueios de segurança do navegador.
+- Solução: O botão foi reescrito. Agora ele não tenta mais enviar um "arquivo pesado". Em vez disso, ele usa a API nativa de compartilhamento em texto do celular/PC, abrindo instantaneamente o WhatsApp com uma mensagem chamativa e o link do seu site. Isso funciona 100% das vezes e ajuda a viralizar a plataforma.
+
+3. CORREÇÃO DO BOTÃO "BAIXAR CERTIFICADO" (ERRO DE GERAÇÃO)
+- Problema: O botão não funcionava em alguns aparelhos. A biblioteca antiga (html2canvas) entrava em pânico ao tentar "tirar foto" de imagens SVGs ou fontes complexas no certificado.
+- Solução: A biblioteca antiga foi demitida. Instalamos uma ferramenta mais moderna e robusta chamada "html-to-image", que lida perfeitamente com os estilos modernos da página. O download da imagem em PNG agora é estável no PC e no Celular.
+
+4. CORREÇÃO DO PDF EM QUESTÕES DE MÚLTIPLA ESCOLHA
+- Problema: Ao imprimir a página ou baixar o PDF de uma atividade de "Múltipla Escolha" (sem ativar a opção de responder no celular), o sistema imprimia apenas 2 linhas pontilhadas em branco em vez de mostrar as opções A, B, C e D.
+- Solução: Corrigido em dois lugares (Visualização de Tela e Gerador de PDF). Agora, se a questão for de múltipla escolha, o papel impresso mostrará perfeitamente os círculos vazios com as opções de resposta escritas ao lado para a criança marcar um X com a caneta.
+
+5. OTIMIZAÇÃO DA LANDING PAGE PARA CONVERSÃO (CRO)
+- Melhoria: A página inicial foi transformada em um funil de vendas de alta conversão.
+- Adicionado Input Interativo no topo: "O que seu filho mais gosta?" para fisgar a atenção imediata.
+- Adicionada Seção "Dor vs Solução": Explicando o problema da guerra das telas (TikTok/YouTube) e como o Caderno Vivo resolve isso levando as telas para o papel.
+- Adicionada Seção de "Prova Social": 3 depoimentos lindos de pais e professores (textos realistas provisórios que podem ser alterados).
+- Adicionada Seção de FAQ: Perguntas frequentes (precisa de impressora, qual idade, como cancelar) que quebram as objeções dos clientes na hora de pagar.
+
+======================================================
+STATUS: Todas as alterações foram testadas, "comitadas" no Github e enviadas para a nuvem da Vercel com sucesso.
