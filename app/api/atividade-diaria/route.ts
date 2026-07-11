@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 
+// Cache da resposta por 24 horas (86400 segundos). 
+// Isso cria um "Desafio do Dia" universal para todos os usuários, gastando apenas 1 requisição na API!
+export const revalidate = 86400;
+
 export async function GET(req: Request) {
   if (!process.env.GEMINI_API_KEY) {
     // Fallback para mock se não tiver chave (ambiente de build/teste)
