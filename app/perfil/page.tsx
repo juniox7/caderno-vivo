@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { getHistorico, HistoricoItem } from '@/lib/historico';
-import { ArrowLeft, Clock, Image as ImageIcon, Search } from 'lucide-react';
+import { ArrowLeft, Clock, Image as ImageIcon, Search, Activity } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Perfil() {
   const [historico, setHistorico] = useState<HistoricoItem[]>([]);
-  const [tab, setTab] = useState<'historico' | 'galeria'>('historico');
+  const [tab, setTab] = useState<'historico' | 'galeria' | 'totais'>('historico');
 
   useEffect(() => {
     setHistorico(getHistorico());
@@ -55,6 +55,15 @@ export default function Perfil() {
             >
               <ImageIcon className="w-4 h-4" />
               Galeria de Desenhos
+            </button>
+            <button
+              onClick={() => setTab('totais')}
+              className={`flex items-center gap-2 pb-2 px-2 text-sm font-bold border-b-2 transition-all ${
+                tab === 'totais' ? 'border-primary-600 text-primary-600' : 'border-transparent text-surface-500 hover:text-surface-700'
+              }`}
+            >
+              <Activity className="w-4 h-4" />
+              Atividades Totais
             </button>
           </div>
 
@@ -103,6 +112,21 @@ export default function Perfil() {
                   </div>
                 ))
               )}
+            </div>
+          )}
+
+          {tab === 'totais' && (
+            <div className="bg-white dark:bg-surface-100 dark:text-surface-800 rounded-2xl p-6 border border-surface-200 shadow-sm animate-fade-in-up text-center max-w-md mx-auto mt-8">
+              <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Activity className="w-8 h-8 text-primary-600" />
+              </div>
+              <h2 className="text-xl font-bold text-surface-800 mb-2">Total de Atividades</h2>
+              <p className="text-5xl font-black text-primary-600 mb-4" style={{ fontFamily: 'var(--font-baloo)' }}>
+                {historico.length}
+              </p>
+              <p className="text-surface-500 text-sm">
+                Você está indo muito bem! Continue gerando novas atividades para aprender brincando.
+              </p>
             </div>
           )}
 

@@ -147,12 +147,12 @@ export default function FormularioJogos() {
 
       {/* Resultados */}
       {puzzleGerados.length > 0 && (
-        <div id="resultado-jogos" className="mt-8 pt-8 border-t-2 border-dashed border-surface-200 animate-fade-in-up space-y-8">
-          <h2 className="text-2xl font-bold text-surface-800 mb-6 text-center" style={{ fontFamily: 'var(--font-baloo)' }}>
+        <div id="resultado-jogos" className="mt-8 pt-8 border-t-2 border-dashed border-surface-200 animate-fade-in-up flex flex-col gap-10">
+          <h2 className="text-2xl font-bold text-surface-800 text-center" style={{ fontFamily: 'var(--font-baloo)' }}>
             Seus Jogos Estão Prontos! 🕹️
           </h2>
           {puzzleGerados.map((puzzle, index) => (
-            <div key={index} className="print:break-after-page print:mt-12 bg-white dark:bg-surface-100 p-6 rounded-2xl shadow-sm border border-surface-200">
+            <div key={index} className="print:break-after-page print:mt-12 w-full flex justify-center">
               {puzzle.tipo === 'caca_palavras' && (
                 <CacaPalavras 
                   grid={puzzle.grid} 
