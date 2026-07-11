@@ -2,13 +2,6 @@ import { clerkClient } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import webpush from 'web-push';
 
-// Configuration
-webpush.setVapidDetails(
-  process.env.VAPID_SUBJECT || 'mailto:admin@cadernovivo.com',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
-  process.env.VAPID_PRIVATE_KEY || ''
-);
-
 // MENSAGENS POR SEGMENTO
 const TEXTS = {
   S1_G1: { id: 's1_g1', title: 'CadernoVivo', body: 'Faltam só 2 passos pra você ver a primeira atividade com o nome do seu filho. Quer terminar agora?' },
@@ -28,6 +21,16 @@ export async function GET(req: Request) {
   // Em produção, proteger esta rota verificando um token Cron Secret.
   
   try {
+    if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      webpush.setVapidDetails(
+        process.env.VAPID_SUBJECT || 'mailto:admin@cadernovivo.com',
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+      );
+    } else {
+      console.warn("VAPID keys not configured. Push will fail.");
+    }
+
     const client = await clerkClient();
     let users = await client.users.getUserList({ limit: 500 });
     let sentCount = 0;
