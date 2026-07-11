@@ -1,34 +1,32 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getStats, getTodayStr, realizarCheckin, UserStats } from '@/lib/gamificacao';
+import { getTodayStr, realizarCheckin } from '@/lib/gamificacao';
+import { useGamificacao } from '@/components/GamificacaoProvider';
 import { Check, Flame } from 'lucide-react';
 
 const DIAS_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 export default function StreakTracker() {
-  const [stats, setStats] = useState<UserStats | null>(null);
+  const { stats, refreshStats } = useGamificacao();
   const [hojeFezCheckin, setHojeFezCheckin] = useState(false);
   const [animatingDay, setAnimatingDay] = useState<number | null>(null);
+  
+  // Hydration fix: usar estado e só preencher no client-side
+  const [todayIndex, setTodayIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Carregar stats iniciais
-    const updateStats = () => {
-      const s = getStats();
-      setStats(s);
-      setHojeFezCheckin(s.historicoCheckins.includes(getTodayStr()));
-    };
+    setTodayIndex(new Date().getDay());
+    setMounted(true);
+    
+    // Atualizar checkin inicial se o stats já estiver montado
+    if (stats) {
+      setHojeFezCheckin(stats.historicoCheckins.includes(getTodayStr()));
+    }
+  }, [stats]);
 
-    updateStats();
-
-    // Escutar eventos de update de outros lugares (ex: Loja)
-    window.addEventListener('cadernovivo-gamificacao-update', updateStats);
-    return () => window.removeEventListener('cadernovivo-gamificacao-update', updateStats);
-  }, []);
-
-  if (!stats) return null; // Hydration safety
-
-  const todayIndex = new Date().getDay();
+  if (!mounted || !stats) return null; // Previne hydration mismatch
 
   const handleCheckin = () => {
     if (hojeFezCheckin) return;
@@ -40,6 +38,7 @@ export default function StreakTracker() {
       setTimeout(() => {
         setAnimatingDay(null);
         setHojeFezCheckin(true);
+        refreshStats(); // Atualiza todo o app
       }, 1000);
     }
   };
@@ -71,13 +70,13 @@ export default function StreakTracker() {
           {DIAS_SEMANA.map((letra, index) => {
             const isToday = index === todayIndex;
             
-            // Lógica super simples pro MVP: se a ofensiva for N, marcamos os N dias para trás a partir de hoje
-            // (Para um sistema real usaríamos a data real de cada bolinha, mas para UI ilustrativa de MVP, preenchemos retroativamente)
-            let isChecked = false;
+            // Correção lógica para englobar dias da semana passada se a ofensiva for maior que o dia da semana
+            const diasAtras = (todayIndex - index + 7) % 7; 
             
-            if (isToday && hojeFezCheckin) isChecked = true;
-            else if (isToday && !hojeFezCheckin) isChecked = false;
-            else if (index < todayIndex && (todayIndex - index <= stats.ofensivaAtual - (hojeFezCheckin ? 1 : 0))) {
+            let isChecked = false;
+            if (isToday && hojeFezCheckin) {
+              isChecked = true;
+            } else if (!isToday && diasAtras <= stats.ofensivaAtual - (hojeFezCheckin ? 1 : 0)) {
               isChecked = true;
             }
 
@@ -98,7 +97,8 @@ export default function StreakTracker() {
                         : 'bg-transparent text-surface-400 opacity-50')
                 }`}
               >
-                <span className="text-xs font-bold mb-0.5">{letra}</span>
+                <span className="text-xs font-bold mb-0.5" aria-hidden="true">{letra}</span>
+                <span className="sr-only">Dia {index}</span>
                 {isChecked || isAnimating ? (
                   <Check className={`w-3.5 h-3.5 ${isAnimating ? 'animate-seed-bounce' : ''}`} />
                 ) : (

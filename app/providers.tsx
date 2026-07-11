@@ -2,6 +2,7 @@
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
+import { GamificacaoProvider } from "@/components/GamificacaoProvider";
 
 export function ThemeProvider({
   children,
@@ -14,8 +15,12 @@ export function ThemeProvider({
   }, []);
 
   if (!mounted) {
-    return <>{children}</>;
+    return <GamificacaoProvider>{children}</GamificacaoProvider>;
   }
 
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  return (
+    <GamificacaoProvider>
+      <NextThemesProvider {...props}>{children}</NextThemesProvider>
+    </GamificacaoProvider>
+  );
 }

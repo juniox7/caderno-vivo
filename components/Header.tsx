@@ -7,13 +7,13 @@ import { useTheme } from 'next-themes';
 import { useAuth, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { getStats, UserStats, adicionarSementes, setUserId, syncFromCloud } from '@/lib/gamificacao';
 import { setHistoricoUserId, syncCloudHistorico } from '@/lib/historico';
-import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
 import OnboardingModal from '@/components/OnboardingModal';
+import { useGamificacao } from '@/components/GamificacaoProvider';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [stats, setStats] = useState<UserStats | null>(null);
+  const { stats, refreshStats } = useGamificacao();
   const { theme, setTheme } = useTheme();
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
@@ -34,17 +34,14 @@ export default function Header() {
 
   useEffect(() => {
     setMounted(true);
-    setStats(getStats());
-    const handleUpdate = () => setStats(getStats());
-    window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
-    return () => window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
   }, []);
 
   // Listener para confetes de conquistas
   useEffect(() => {
-    const handleBadgeUnlocked = (e: any) => {
+    const handleBadgeUnlocked = async (e: any) => {
       const badges = e.detail as string[];
       if (badges && badges.length > 0) {
+        const confetti = (await import('canvas-confetti')).default;
         confetti({
           particleCount: 150,
           spread: 70,
@@ -69,12 +66,12 @@ export default function Header() {
       
       // Sincroniza dados da nuvem pro localStorage
       Promise.all([syncFromCloud(), syncCloudHistorico()]).then(() => {
-         setStats(getStats());
+         refreshStats();
       });
     } else {
       setUserId(null);
       setHistoricoUserId(null);
-      setStats(getStats()); // reset to default
+      refreshStats(); // reset to default
     }
   }, [user?.id]);
 
@@ -131,6 +128,7 @@ export default function Header() {
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-1.5 text-surface-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
               title="Alternar tema"
+              aria-label="Alternar Tema"
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
@@ -173,6 +171,7 @@ export default function Header() {
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="p-2 text-surface-400 hover:text-primary-600 rounded-lg transition-colors"
+              aria-label="Alternar Tema"
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>

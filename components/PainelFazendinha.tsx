@@ -1,22 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getStats, UserStats } from '@/lib/gamificacao';
+import { useGamificacao } from '@/components/GamificacaoProvider';
 import Link from 'next/link';
 import { Store } from 'lucide-react';
 
 const ARVORE_EMOJIS = ['🌰', '🌱', '🌿', '🪴', '🌲', '🌳', '🌺', '✨'];
 
 export default function PainelFazendinha() {
-  const [stats, setStats] = useState<UserStats | null>(null);
+  const { stats } = useGamificacao();
   const [hora, setHora] = useState(12);
 
   useEffect(() => {
     setHora(new Date().getHours());
-    setStats(getStats());
-    const handleUpdate = () => setStats(getStats());
-    window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
-    return () => window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
   }, []);
 
   if (!stats) return null;

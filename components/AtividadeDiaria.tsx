@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { Zap, CheckCircle2, Lightbulb, Loader2, ChevronDown, ChevronUp, Lock } from 'lucide-react';
 import { AtividadeDiaria as AtividadeDiariaType } from '@/lib/types';
-import { concluirAtividadeDiaria, isAtividadeDiariaConcluidaHoje, getStats } from '@/lib/gamificacao';
+import { concluirAtividadeDiaria, isAtividadeDiariaConcluidaHoje } from '@/lib/gamificacao';
+import { useGamificacao } from '@/components/GamificacaoProvider';
 
 export default function AtividadeDiaria() {
+  const { stats, refreshStats } = useGamificacao();
   const [atividade, setAtividade] = useState<AtividadeDiariaType | null>(null);
   const [loading, setLoading] = useState(false);
   const [gerada, setGerada] = useState(false);
@@ -14,14 +16,13 @@ export default function AtividadeDiaria() {
   const [showResposta, setShowResposta] = useState(false);
   const [sementeAnimacao, setSementeAnimacao] = useState(false);
   const [expanded, setExpanded] = useState(true);
-  const [streak, setStreak] = useState(0);
   const [selectedOpcao, setSelectedOpcao] = useState<string | null>(null);
   const [erroOpcao, setErroOpcao] = useState<string | null>(null);
   const [jaFeitaHoje, setJaFeitaHoje] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Prevents double click
 
   useEffect(() => {
     const carregarEstado = () => {
-      setStreak(getStats().ofensivaAtual);
       if (isAtividadeDiariaConcluidaHoje()) {
         setJaFeitaHoje(true);
         setConcluida(true);
@@ -32,15 +33,10 @@ export default function AtividadeDiaria() {
     if (!isAtividadeDiariaConcluidaHoje() && !gerada && !loading) {
       gerarAtividade();
     }
-
-    const handleUpdate = () => carregarEstado();
-    window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
-    
-    return () => {
-      window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const streak = stats?.ofensivaAtual || 0;
 
   const gerarAtividade = async () => {
     setLoading(true);
@@ -61,15 +57,21 @@ export default function AtividadeDiaria() {
   };
 
   const concluirAtividadeUI = (bonus = 1) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
     if (concluirAtividadeDiaria(bonus)) {
       setConcluida(true);
       setSementeAnimacao(true);
+      refreshStats();
       setTimeout(() => setSementeAnimacao(false), 1500);
+    } else {
+      setIsSubmitting(false); // only reset if it fails, otherwise button hides
     }
   };
 
   const handleOpcaoSelect = (opcao: string) => {
-    if (concluida) return;
+    if (concluida || isSubmitting) return;
     
     setSelectedOpcao(opcao);
     if (atividade?.respostaCorreta && opcao === atividade.respostaCorreta) {
@@ -207,7 +209,7 @@ export default function AtividadeDiaria() {
                           <button
                             key={opcao}
                             onClick={() => handleOpcaoSelect(opcao)}
-                            disabled={concluida}
+                            disabled={concluida || isSubmitting}
                             className={btnClass}
                           >
                             <span className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${concluida && isCorrect ? 'bg-emerald-500 text-white' : 'bg-surface-200 text-surface-600'}`}>
@@ -261,10 +263,11 @@ export default function AtividadeDiaria() {
                     {(!atividade.opcoes || atividade.opcoes.length === 0) && (
                       <button
                         onClick={() => concluirAtividadeUI(1)}
-                        className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm transition-all hover:shadow-lg hover:shadow-emerald-200 active:scale-[0.98] flex items-center justify-center gap-2"
+                        disabled={isSubmitting}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm transition-all hover:shadow-lg hover:shadow-emerald-200 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
                       >
-                        <CheckCircle2 className="w-5 h-5" />
-                        Marcar como Concluído!
+                        {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
+                        {isSubmitting ? 'Marcando...' : 'Marcar como Concluído!'}
                       </button>
                     )}
                   </div>

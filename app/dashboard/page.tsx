@@ -8,18 +8,11 @@ import StreakTracker from '@/components/StreakTracker';
 import PainelFazendinha from '@/components/PainelFazendinha';
 import PushManager from '@/components/PushManager';
 import { Printer, Sparkles, Brain, Zap, Activity } from 'lucide-react';
-import { getStats, UserStats } from '@/lib/gamificacao';
+import { useGamificacao } from '@/components/GamificacaoProvider';
 import { useState, useEffect } from 'react';
 
 export default function Home() {
-  const [stats, setStats] = useState<UserStats | null>(null);
-
-  useEffect(() => {
-    setStats(getStats());
-    const handleUpdate = () => setStats(getStats());
-    window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
-    return () => window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
-  }, []);
+  const { stats } = useGamificacao();
   return (
     <>
       <Header />
