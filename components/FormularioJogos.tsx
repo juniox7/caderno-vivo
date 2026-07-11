@@ -40,7 +40,10 @@ export default function FormularioJogos() {
         if (r.status === 403) throw new Error('Payment Required');
         const data = await r.json();
         if (data.error) throw new Error(data.error);
-        puzzlesData.push(data);
+        puzzlesData.push({
+          ...data,
+          id: `${Date.now()}-${Math.random().toString(36).substring(7)}`
+        });
         
         if (i < qtdPuzzles - 1) {
           await new Promise(resolve => setTimeout(resolve, 5000));
@@ -152,7 +155,7 @@ export default function FormularioJogos() {
             Seus Jogos Estão Prontos! 🕹️
           </h2>
           {puzzleGerados.map((puzzle, index) => (
-            <div key={index} className="print:break-after-page print:mt-12 w-full flex justify-center">
+            <div key={puzzle.id || index} className="print:break-after-page print:mt-12 w-full flex justify-center">
               {puzzle.tipo === 'caca_palavras' && (
                 <CacaPalavras 
                   grid={puzzle.grid} 

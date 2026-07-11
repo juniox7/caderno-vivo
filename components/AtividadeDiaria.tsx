@@ -23,9 +23,25 @@ export default function AtividadeDiaria() {
 
   useEffect(() => {
     const carregarEstado = () => {
-      if (isAtividadeDiariaConcluidaHoje()) {
+      const isConcluida = isAtividadeDiariaConcluidaHoje();
+      if (isConcluida) {
         setJaFeitaHoje(true);
         setConcluida(true);
+        
+        const saved = localStorage.getItem('@cadernovivo_atividade_diaria_hoje');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            // Verifica se a atividade salva é de hoje, para evitar atividades velhas
+            const hoje = new Date().toISOString().split('T')[0];
+            if (data.data === hoje) {
+              setAtividade(data.atividade);
+              setSelectedOpcao(data.selectedOpcao);
+              setGerada(true);
+              setShowResposta(true);
+            }
+          } catch(e) {}
+        }
       }
     };
 
@@ -62,8 +78,18 @@ export default function AtividadeDiaria() {
     
     if (concluirAtividadeDiaria(bonus)) {
       setConcluida(true);
+      setJaFeitaHoje(true);
       setSementeAnimacao(true);
       refreshStats();
+      
+      if (atividade) {
+        localStorage.setItem('@cadernovivo_atividade_diaria_hoje', JSON.stringify({
+          data: new Date().toISOString().split('T')[0],
+          atividade,
+          selectedOpcao
+        }));
+      }
+      
       setTimeout(() => setSementeAnimacao(false), 1500);
     } else {
       setIsSubmitting(false); // only reset if it fails, otherwise button hides
@@ -130,7 +156,7 @@ export default function AtividadeDiaria() {
         {/* Content */}
         {expanded && (
           <div className="px-5 pb-5 animate-fade-in">
-            {jaFeitaHoje ? (
+            {jaFeitaHoje && !atividade ? (
               <div className="text-center py-8 space-y-3">
                 <div className="w-16 h-16 mx-auto bg-emerald-100 rounded-full flex items-center justify-center">
                   <CheckCircle2 className="w-8 h-8 text-emerald-500" />
@@ -257,13 +283,12 @@ export default function AtividadeDiaria() {
                   )}
                 </div>
 
-                {/* Concluir com Transição Suave */}
                 <div className="relative overflow-hidden transition-all duration-500 ease-in-out" style={{ minHeight: concluida ? '120px' : '60px' }}>
                   <div className={`absolute w-full transition-all duration-500 ${concluida ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     {(!atividade.opcoes || atividade.opcoes.length === 0) && (
                       <button
                         onClick={() => concluirAtividadeUI(1)}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || concluida}
                         className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm transition-all hover:shadow-lg hover:shadow-emerald-200 active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
                       >
                         {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
