@@ -80,22 +80,26 @@ export async function GET(req: Request) {
         } else if (hoursSinceReg >= 24 && hoursSinceReg < 48 && pushState.lastTextSent !== TEXTS.S1_G2.id) {
           notificationToSend = TEXTS.S1_G2;
         }
+      } else if (totalActivities > 0 && daysSinceLastActivity >= 5) {
+        // SEGMENTO 10.4 (Dormência - Avaliado antes para capturar usuários inativos)
+        if (daysSinceLastActivity >= 5 && daysSinceLastActivity < 7 && pushState.lastTextSent !== TEXTS.S4_G1.id) {
+          notificationToSend = TEXTS.S4_G1;
+        } else if (daysSinceLastActivity >= 19 && daysSinceLastActivity < 21 && pushState.lastTextSent !== TEXTS.S4_G2.id) {
+          notificationToSend = TEXTS.S4_G2;
+        }
       } else if (totalActivities === 1) {
         // SEGMENTO 10.2
         if (daysSinceLastActivity >= 1 && daysSinceLastActivity < 2 && pushState.lastTextSent !== TEXTS.S2_G1.id) {
           notificationToSend = TEXTS.S2_G1;
         } else if (daysSinceLastActivity >= 3 && daysSinceLastActivity < 4 && pushState.lastTextSent !== TEXTS.S2_G2_DEFAULT.id) {
-          // Fallback, como não salvamos o nome da criança globalmente ainda, usamos o default.
           notificationToSend = TEXTS.S2_G2_DEFAULT;
         }
-      } else if (totalActivities >= 2 && totalActivities <= 5) {
-        // SEGMENTO 10.3
-        // Verifica timezone para enviar entre 17h e 20h
+      } else if (totalActivities >= 2) {
+        // SEGMENTO 10.3 (Hábito Diário)
         const tz = privateMeta.pushTimezone || 'America/Sao_Paulo';
         const userHour = parseInt(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: tz }).format(new Date()));
         
         if (userHour >= 17 && userHour < 20) {
-          // Pega um que seja diferente do lastTextSent
           const available = TEXTS.S3.filter(t => t.id !== pushState.lastTextSent);
           const picked = available[Math.floor(Math.random() * available.length)];
           
@@ -105,14 +109,6 @@ export async function GET(req: Request) {
                 body: picked.body.replace('{{OFENSIVA}}', ofensiva.toString())
              };
           }
-        }
-      } else if (totalActivities > 0 && daysSinceLastActivity >= 5) {
-        // SEGMENTO 10.4
-        if (daysSinceLastActivity >= 5 && daysSinceLastActivity < 7 && pushState.lastTextSent !== TEXTS.S4_G1.id) {
-          notificationToSend = TEXTS.S4_G1;
-        } else if (daysSinceLastActivity >= 19 && daysSinceLastActivity < 21 && pushState.lastTextSent !== TEXTS.S4_G2.id) {
-           // Gatilho 2 é 2 semanas após o gatilho 1 (que foi com 5 dias). 5 + 14 = 19 dias.
-          notificationToSend = TEXTS.S4_G2;
         }
       }
 
