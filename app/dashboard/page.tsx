@@ -6,6 +6,7 @@ import AtividadeDiaria from '@/components/AtividadeDiaria';
 import SeletorModo from '@/components/SeletorModo';
 import StreakTracker from '@/components/StreakTracker';
 import PainelFazendinha from '@/components/PainelFazendinha';
+import PushManager from '@/components/PushManager';
 import { Printer, Sparkles, Brain, Zap, Activity } from 'lucide-react';
 import { getStats, UserStats } from '@/lib/gamificacao';
 import { useState, useEffect } from 'react';
@@ -15,57 +16,38 @@ export default function Home() {
 
   useEffect(() => {
     setStats(getStats());
+    const handleUpdate = () => setStats(getStats());
+    window.addEventListener('cadernovivo-gamificacao-update', handleUpdate);
+    return () => window.removeEventListener('cadernovivo-gamificacao-update', handleUpdate);
   }, []);
   return (
     <>
       <Header />
 
       <main className="flex-1">
-        {/* Hero section */}
-        <section className="relative overflow-hidden px-4 pt-10 pb-4">
-          {/* Background decoration */}
+        <section className="relative overflow-hidden px-4 pt-10 pb-6 text-center animate-fade-in-up">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-br from-primary-100/60 via-transparent to-success-100/40 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative max-w-3xl mx-auto text-center animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 border border-primary-200 text-primary-600 text-xs font-semibold mb-6">
-              <Sparkles className="w-3.5 h-3.5" />
-              Personalização por Inteligência Artificial
-            </div>
-
-            <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-surface-900 leading-tight"
-              style={{ fontFamily: 'var(--font-baloo)' }}
-            >
-              Menos tela.
-              <br />
-              Mais{' '}
-              <span className="gradient-text">diversão impressa.</span>
+          <div className="relative max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-surface-900 leading-tight mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>
+              Oi, bem-vindo de volta! 👋
             </h1>
-
-            <p className="text-surface-400 text-base sm:text-lg mt-4 max-w-lg mx-auto leading-relaxed">
-              Gere cadernos de atividades educativas
-              <span className="text-surface-700 font-semibold"> 100% personalizados </span>
-              com os interesses do seu filho. Prontos para imprimir em casa!
-            </p>
-
-            {/* Feature pills */}
-            <div className="flex flex-wrap justify-center gap-3 mt-8">
-              {[
-                { icon: Brain, label: 'IA Personaliza Tudo', color: 'text-primary-600 bg-primary-50 border-primary-200' },
-                { icon: Printer, label: 'Imprime em Casa', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
-                { icon: Zap, label: 'Pronto em Segundos', color: 'text-amber-600 bg-amber-50 border-amber-200' },
-              ].map((feat) => (
-                <div
-                  key={feat.label}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-medium ${feat.color}`}
-                >
-                  <feat.icon className="w-3.5 h-3.5" />
-                  {feat.label}
-                </div>
-              ))}
-            </div>
+            <p className="text-surface-500 text-lg mb-8">Vamos criar a atividade de hoje?</p>
+            
+            <a href="#como-funciona" onClick={(e) => {
+              e.preventDefault();
+              document.querySelector('#seletor-modo')?.scrollIntoView({ behavior: 'smooth' });
+            }} className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold text-lg hover:shadow-lg hover:scale-105 transition-all">
+              <Sparkles className="w-5 h-5" />
+              Criar Atividade Agora
+            </a>
           </div>
         </section>
+
+        {/* Atividade Diária no TOPO */}
+        <div className="mb-4">
+          <AtividadeDiaria />
+        </div>
 
         {/* Gamification / Streak Tracker & Fazendinha */}
         <section className="w-full max-w-3xl mx-auto px-4 pb-4">
@@ -76,23 +58,25 @@ export default function Home() {
               <div>
                 <h3 className="font-bold text-lg text-surface-800 flex items-center gap-2 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>
                   <Activity className="w-5 h-5 text-primary-500" />
-                  Boletim de Desempenho
+                  Boletim Semanal
                 </h3>
-                <p className="text-surface-500 text-sm">Acompanhe seu progresso e atividades realizadas!</p>
+                <p className="text-surface-500 text-sm">Resumo dos seus últimos dias.</p>
               </div>
               <div className="flex gap-4">
-                <div className="text-center p-3 bg-primary-50 rounded-xl border border-primary-100 min-w-[100px]">
-                  <div className="text-2xl font-bold text-primary-600">{stats.historicoGeral.totalAtividades}</div>
-                  <div className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Atividades</div>
+                <div className="text-center p-3 bg-primary-50 rounded-xl border border-primary-100 min-w-[90px]">
+                  <div className="text-2xl font-bold text-primary-600">{stats.historicoGeral.diasSeguidos}</div>
+                  <div className="text-[10px] font-semibold text-primary-400 uppercase tracking-wide mt-1">Dias Ativos</div>
                 </div>
-                <div className="text-center p-3 bg-emerald-50 rounded-xl border border-emerald-100 min-w-[100px]">
-                  <div className="text-2xl font-bold text-emerald-600">+{stats.historicoGeral.totalSementesGanhas}</div>
-                  <div className="text-xs font-semibold text-emerald-400 uppercase tracking-wide">Sementes Totais</div>
-                </div>
-                <div className="text-center p-3 bg-amber-50 rounded-xl border border-amber-100 min-w-[100px]">
-                  <div className="text-2xl font-bold text-amber-600">{stats.conquistas.length}</div>
-                  <div className="text-xs font-semibold text-amber-400 uppercase tracking-wide">Medalhas</div>
-                </div>
+                {stats.historicoGeral.totalSementesGanhas === 0 ? (
+                  <div className="text-center p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex-1 min-w-[120px] flex items-center justify-center">
+                    <span className="text-xs font-medium text-emerald-600">Crie sua primeira atividade e ganhe sementes! 🌱</span>
+                  </div>
+                ) : (
+                  <div className="text-center p-3 bg-emerald-50 rounded-xl border border-emerald-100 min-w-[90px]">
+                    <div className="text-2xl font-bold text-emerald-600">+{stats.historicoGeral.totalSementesGanhas}</div>
+                    <div className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wide mt-1">Sementes Totais</div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -100,11 +84,15 @@ export default function Home() {
           <PainelFazendinha />
         </section>
 
-        {/* Atividade Diária */}
-        <AtividadeDiaria />
-
         {/* Seletor de Modo */}
-        <SeletorModo />
+        <div id="seletor-modo">
+          <SeletorModo />
+        </div>
+
+        {/* Gerenciador de Push Notifications */}
+        <div className="w-full max-w-4xl mx-auto px-4 mt-8">
+          <PushManager />
+        </div>
 
         {/* Como Funciona */}
         <section id="como-funciona" className="w-full max-w-4xl mx-auto px-4 py-12">

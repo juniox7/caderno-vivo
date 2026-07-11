@@ -111,8 +111,8 @@ export default function AtividadeDiaria() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200">
-              <span className="text-sm animate-streak">🔥</span>
+            <div key={streak} className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200">
+              <span className="text-sm animate-streak inline-block">🔥</span>
               <span className="text-xs font-bold text-orange-600">
                 {streak} dias
               </span>
@@ -255,19 +255,21 @@ export default function AtividadeDiaria() {
                   )}
                 </div>
 
-                {/* Concluir */}
-                {!concluida ? (
-                  !atividade.opcoes || atividade.opcoes.length === 0 ? (
-                    <button
-                      onClick={() => concluirAtividadeUI(1)}
-                      className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm transition-all hover:shadow-lg hover:shadow-emerald-200 active:scale-[0.98] flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle2 className="w-5 h-5" />
-                      Marcar como Concluído!
-                    </button>
-                  ) : null
-                ) : (
-                  <div className="text-center py-4 animate-fade-in space-y-2">
+                {/* Concluir com Transição Suave */}
+                <div className="relative overflow-hidden transition-all duration-500 ease-in-out" style={{ minHeight: concluida ? '120px' : '60px' }}>
+                  <div className={`absolute w-full transition-all duration-500 ${concluida ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}>
+                    {(!atividade.opcoes || atividade.opcoes.length === 0) && (
+                      <button
+                        onClick={() => concluirAtividadeUI(1)}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm transition-all hover:shadow-lg hover:shadow-emerald-200 active:scale-[0.98] flex items-center justify-center gap-2"
+                      >
+                        <CheckCircle2 className="w-5 h-5" />
+                        Marcar como Concluído!
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className={`absolute w-full text-center py-4 space-y-2 transition-all duration-500 delay-150 ${!concluida ? 'opacity-0 scale-105 pointer-events-none' : 'opacity-100 scale-100'}`}>
                     <div className="flex items-center justify-center gap-2">
                       {sementeAnimacao && (
                         <span className="text-3xl animate-seed-bounce">🌱</span>
@@ -283,7 +285,7 @@ export default function AtividadeDiaria() {
                       Você ganhou <span className="text-amber-600 font-bold">+{atividade.opcoes ? 2 : 1} sementes</span>! Continue assim!
                     </p>
                   </div>
-                )}
+                </div>
               </div>
             )}
               </>

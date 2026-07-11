@@ -41,16 +41,25 @@ export function generateWordSearch(words: string[], size: number = 12): { grid: 
 
       let canPlace = true;
 
+      let overlaps = 0;
       // Verificar colisão
       for (let i = 0; i < cleanWord.length; i++) {
         const checkRow = row + (i * dir.y);
         const checkCol = col + (i * dir.x);
         const currentLetter = grid[checkRow][checkCol];
         
-        if (currentLetter !== '' && currentLetter !== cleanWord[i]) {
-          canPlace = false;
-          break;
+        if (currentLetter !== '') {
+          if (currentLetter !== cleanWord[i]) {
+            canPlace = false;
+            break;
+          } else {
+            overlaps++;
+          }
         }
+      }
+
+      if (overlaps > 1) {
+        canPlace = false;
       }
 
       if (canPlace) {
