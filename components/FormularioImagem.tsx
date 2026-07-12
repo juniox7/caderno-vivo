@@ -64,7 +64,8 @@ export default function FormularioImagem() {
       const atividade: AtividadeGerada = {
         titulo: "Estúdio de Arte IA",
         subtitulo: tema,
-        atividades: imagensGeradas as any
+        atividades: imagensGeradas as any,
+        criadoEm: new Date().toISOString()
       };
 
       setResultado(atividade);
