@@ -89,11 +89,30 @@ export async function POST(req: Request) {
 
     // Extrair o userId do parâmetro de rastreamento (src)
     const trackingParams = data.TrackingParameters || data.tracking_parameters || {};
-    const userId = trackingParams.src;
+    let userId = trackingParams.src;
+    
+    const client = await clerkClient();
 
     if (!userId) {
-      console.error('[KIWIFY_WEBHOOK] userId (src) não encontrado nos parâmetros de rastreamento:', trackingParams);
-      return new NextResponse('userId não encontrado no tracking', { status: 400 });
+      console.warn('[KIWIFY_WEBHOOK] userId (src) não encontrado. Tentando buscar pelo email...');
+      const customerEmail = data.Customer?.email || data.email;
+      
+      if (customerEmail) {
+        try {
+          const users = await client.users.getUserList({ emailAddress: [customerEmail] });
+          if (users.data && users.data.length > 0) {
+            userId = users.data[0].id;
+            console.log(`[KIWIFY_WEBHOOK] Usuário encontrado pelo email: ${userId}`);
+          }
+        } catch (searchError) {
+          console.error('[KIWIFY_WEBHOOK] Erro ao buscar usuário pelo email:', searchError);
+        }
+      }
+
+      if (!userId) {
+        console.error('[KIWIFY_WEBHOOK] Não foi possível identificar o usuário (sem src e email não encontrado no Clerk).', { email: customerEmail });
+        return new NextResponse('userId não encontrado e email não correspondente', { status: 400 });
+      }
     }
 
     // Determinar o plano baseado no product_id
