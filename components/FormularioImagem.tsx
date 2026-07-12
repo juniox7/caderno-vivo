@@ -207,8 +207,9 @@ export default function FormularioImagem() {
           {loading && (
             <div className="mt-8">
               <LoadingMascote
-                message="Criando desenhos incríveis! O mascote está misturando as cores..."
-                submessage="Isso pode levar alguns segundos dependendo da complexidade do seu pedido."
+                nomes={['Pequeno Artista']}
+                interesse={tema}
+                focos={['arte']}
               />
             </div>
           )}
