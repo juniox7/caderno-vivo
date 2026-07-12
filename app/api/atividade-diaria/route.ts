@@ -5,7 +5,7 @@ import { GoogleGenAI } from '@google/genai';
 // Isso cria um "Desafio do Dia" universal para todos os usuários, gastando apenas 1 requisição na API!
 export const revalidate = 86400;
 
-export async function GET(req: Request) {
+export async function GET() {
   if (!process.env.GEMINI_API_KEY) {
     // Fallback para mock se não tiver chave (ambiente de build/teste)
     const { gerarAtividadeDiariaMock } = await import('@/lib/mock-llm');
@@ -18,13 +18,17 @@ export async function GET(req: Request) {
       apiKey: process.env.GEMINI_API_KEY,
     });
 
-    const randomSeed = Math.floor(Math.random() * 1000000);
+    const hoje = new Date();
+    // Seed determinística baseada na data de hoje (UTC) garante a mesma atividade pra todo mundo mesmo se o cache limpar
+    const dailySeed = hoje.getUTCFullYear() * 10000 + (hoje.getUTCMonth() + 1) * 100 + hoje.getUTCDate();
+
     const tipos = ['desafio', 'quebra-cabeca', 'curiosidade'];
     const temas = ['espaço', 'animais', 'matemática divertida', 'dinossauros', 'fundo do mar', 'história', 'corpo humano', 'invenções', 'plantas', 'robôs', 'natureza'];
-    const tipo = tipos[Math.floor(Math.random() * tipos.length)];
-    const tema = temas[Math.floor(Math.random() * temas.length)];
+    
+    const tipo = tipos[dailySeed % tipos.length];
+    const tema = temas[dailySeed % temas.length];
 
-    const prompt = `[SEED: ${randomSeed}] Gere UMA atividade educativa curta, SUPER CRIATIVA e DIFERENTE (nunca repita as clássicas) para crianças (7 a 10 anos). 
+    const prompt = `[SEED: ${dailySeed}] Gere UMA atividade educativa curta, SUPER CRIATIVA e DIFERENTE (nunca repita as clássicas) para crianças (7 a 10 anos). 
 Tema sorteado para hoje: "${tema}". O foco sugerido: "${tipo}".
 A atividade deve ser do tipo 'desafio' (matemática ou lógica rápida), 'quebra-cabeca' (charada ou enigma) ou 'curiosidade' (ciências ou fatos históricos do tema).
 O conteúdo precisa ser divertido e fácil de ler.
@@ -54,7 +58,7 @@ Retorne APENAS um JSON válido seguindo exatamente esta estrutura:
     const result = JSON.parse(cleanJson);
     
     // Assegura que o id seja sempre gerado
-    result.id = `daily-${Date.now()}-${randomSeed}`;
+    result.id = `daily-${Date.now()}-${dailySeed}`;
 
     // Normaliza o tipo caso o LLM mande errado
     if (!['desafio', 'quebra-cabeca', 'curiosidade'].includes(result.tipo)) {
