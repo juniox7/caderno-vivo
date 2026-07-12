@@ -21,7 +21,9 @@ import {
   Image as ImageIcon,
   Puzzle,
   Minus,
+  Lock,
 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 import { salvarNoHistorico } from '@/lib/historico';
 import Link from 'next/link';
 import UpgradeModal from '@/components/UpgradeModal';
@@ -43,6 +45,9 @@ export default function FormularioLivre() {
   const [personagensAleatorios, setPersonagensAleatorios] = useState(false);
   const [idade, setIdade] = useState(7);
   const [anoEscolar, setAnoEscolar] = useState('2ano');
+  
+  const { user } = useUser();
+  const isFree = !user?.publicMetadata?.plan_tier || user.publicMetadata.plan_tier === 'gratis';
   
   // NEW STATE: Focos Selecionados
   const [focosSelecionados, setFocosSelecionados] = useState<{id: string, label: string, emoji: string, qtd: number}[]>([
@@ -799,13 +804,24 @@ export default function FormularioLivre() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setEstiloImagem('ilustracao')}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold transition-all border ${
+                      onClick={() => {
+                        if (isFree) {
+                          setShowUpgradeModal(true);
+                        } else {
+                          setEstiloImagem('ilustracao');
+                        }
+                      }}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-semibold transition-all border relative overflow-hidden ${
                         estiloImagem === 'ilustracao'
                           ? 'bg-fuchsia-50 border-fuchsia-300 text-fuchsia-700 shadow-sm'
                           : 'bg-white dark:bg-surface-100 dark:text-surface-800 border-surface-200 text-surface-500 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100'
                       }`}
                     >
+                      {isFree && (
+                        <div className="absolute top-1 right-2">
+                          <Lock className="w-3 h-3 text-fuchsia-400 opacity-70" />
+                        </div>
+                      )}
                       🎨 Já Ilustrada
                     </button>
                   </div>

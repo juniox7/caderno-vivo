@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sparkles, ArrowLeft, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Sparkles, ArrowLeft, Image as ImageIcon, Loader2, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useUser } from '@clerk/nextjs';
 import { salvarNoHistorico } from '@/lib/historico';
 import PreviewAtividade from './PreviewAtividade';
 import UpgradeModal from './UpgradeModal';
@@ -14,6 +15,9 @@ import LoadingMascote from './LoadingMascote';
 
 export default function FormularioImagem() {
   const router = useRouter();
+  const { user } = useUser();
+  const isFree = !user?.publicMetadata?.plan_tier || user.publicMetadata.plan_tier === 'gratis';
+
   const [loading, setLoading] = useState(false);
   const [tema, setTema] = useState('');
   const [estilo, setEstilo] = useState<'colorir' | 'ilustracao'>('colorir');
@@ -153,15 +157,28 @@ export default function FormularioImagem() {
                   <span className="text-2xl">✏️</span>
                   Para Colorir
                 </button>
+                
+                {/* Opção Premium com Cadeado */}
                 <button
                   type="button"
-                  onClick={() => setEstilo('ilustracao')}
-                  className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl text-sm font-bold transition-all border ${
+                  onClick={() => {
+                    if (isFree) {
+                      setShowUpgradeModal(true);
+                    } else {
+                      setEstilo('ilustracao');
+                    }
+                  }}
+                  className={`flex-1 flex flex-col items-center justify-center gap-2 p-4 rounded-xl text-sm font-bold transition-all border relative overflow-hidden ${
                     estilo === 'ilustracao'
                       ? 'bg-purple-50 border-purple-300 text-purple-700 shadow-sm'
                       : 'bg-surface-50 border-surface-200 text-surface-500 hover:bg-surface-100'
                   }`}
                 >
+                  {isFree && (
+                    <div className="absolute top-2 right-2">
+                      <Lock className="w-4 h-4 text-purple-400 opacity-70" />
+                    </div>
+                  )}
                   <span className="text-2xl">🎨</span>
                   Ilustração Completa
                 </button>
