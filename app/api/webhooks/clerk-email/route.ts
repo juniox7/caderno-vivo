@@ -3,7 +3,8 @@ import { Resend } from 'resend';
 import { getWelcomeEmailHtml } from '@/lib/email-templates';
 import { headers } from 'next/headers';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Evita crash no build se a variável não estiver presente (Next.js avalia arquivos no build)
+const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
 
 export async function POST(req: Request) {
   try {
