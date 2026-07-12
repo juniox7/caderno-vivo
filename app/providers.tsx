@@ -3,6 +3,8 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
 import { GamificacaoProvider } from "@/components/GamificacaoProvider";
+import { PostHogProvider } from "@/components/PostHogProvider";
+import { CrispChat } from "@/components/CrispChat";
 
 export function ThemeProvider({
   children,
@@ -19,8 +21,11 @@ export function ThemeProvider({
   }
 
   return (
-    <GamificacaoProvider>
-      <NextThemesProvider {...props}>{children}</NextThemesProvider>
-    </GamificacaoProvider>
+    <PostHogProvider>
+      <GamificacaoProvider>
+        <CrispChat />
+        <NextThemesProvider {...props}>{children}</NextThemesProvider>
+      </GamificacaoProvider>
+    </PostHogProvider>
   );
 }
