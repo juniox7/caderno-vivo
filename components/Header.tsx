@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Sparkles, Menu, X, Store, Bug, Moon, Sun, Crown } from 'lucide-react';
+import { BookOpen, Sparkles, Menu, X, Store, Bug, Moon, Sun, Crown, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
@@ -42,6 +42,35 @@ export default function Header() {
     const handleBadgeUnlocked = async (e: any) => {
       const badges = e.detail as string[];
       if (badges && badges.length > 0) {
+        
+        // Toca um som de sucesso (Web Audio API)
+        try {
+          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+          if (AudioContext) {
+            const ctx = new AudioContext();
+            const playNote = (freq: number, startTime: number, duration: number) => {
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.type = 'sine';
+              osc.frequency.value = freq;
+              gain.gain.setValueAtTime(0, ctx.currentTime + startTime);
+              gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + startTime + 0.05);
+              gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startTime + duration);
+              osc.start(ctx.currentTime + startTime);
+              osc.stop(ctx.currentTime + startTime + duration);
+            };
+            // Arpeggio mágico ascendente
+            playNote(523.25, 0, 0.4);    // Dó
+            playNote(659.25, 0.1, 0.4);  // Mi
+            playNote(783.99, 0.2, 0.4);  // Sol
+            playNote(1046.50, 0.3, 0.8); // Dó mais alto
+          }
+        } catch (err) {
+          console.log("Audio play failed:", err);
+        }
+
         const confetti = (await import('canvas-confetti')).default;
         confetti({
           particleCount: 150,
@@ -203,6 +232,14 @@ export default function Header() {
               className="py-2 px-3 rounded-lg text-surface-600 hover:bg-primary-50 hover:text-primary-600 transition-all"
             >
               Início
+            </Link>
+            <Link
+              href="/instalar"
+              onClick={() => setMenuOpen(false)}
+              className="py-2 px-3 rounded-lg text-surface-600 hover:bg-primary-50 hover:text-primary-600 transition-all flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Instalar App
             </Link>
             <Link
               href="/#modos"

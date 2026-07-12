@@ -65,7 +65,24 @@ export function getStats(): UserStats {
   if (typeof window === 'undefined') return DEFAULT_STATS;
   const data = localStorage.getItem(getStorageKey());
   const parsed = data ? JSON.parse(data) : null;
-  return parsed ? { ...DEFAULT_STATS, ...parsed } : DEFAULT_STATS;
+  
+  if (!parsed) return DEFAULT_STATS;
+
+  return { 
+    ...DEFAULT_STATS, 
+    ...parsed,
+    inventario: {
+      ...DEFAULT_STATS.inventario,
+      ...(parsed.inventario || {})
+    },
+    historicoGeral: {
+      ...DEFAULT_STATS.historicoGeral,
+      ...(parsed.historicoGeral || {})
+    },
+    conquistas: parsed.conquistas || [],
+    historicoCheckins: parsed.historicoCheckins || [],
+    redeemedCodes: parsed.redeemedCodes || []
+  };
 }
 
 // Salva o estado no localStorage e sincroniza na nuvem
@@ -249,6 +266,11 @@ export const registrarAtividade = (tipo: string) => {
   }
   
   stats.historicoGeral.totalAtividades += 1;
+  stats.atividadesGeradas += 1;
+  
+  if (tipo === 'labirinto') stats.labirintosGerados += 1;
+  if (tipo === 'caca_palavras') stats.cacasGerados += 1;
+  if (tipo === 'historia') stats.historiasGeradas += 1;
 
   // Lógica de Conquistas (Lote 3)
   if (!stats.conquistas) stats.conquistas = [];

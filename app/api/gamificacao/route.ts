@@ -18,8 +18,16 @@ export async function GET() {
   let stats = DEFAULT_STATS;
   
   if (data && data.historico_geral_json) {
-    // Restauramos todo o objeto a partir do JSON para não perder os campos como inventario, conquistas, etc.
-    stats = data.historico_geral_json as UserStats;
+    // Restauramos todo o objeto a partir do JSON garantindo propriedades
+    stats = { 
+      ...DEFAULT_STATS, 
+      ...data.historico_geral_json,
+      inventario: {
+        ...DEFAULT_STATS.inventario,
+        ...(data.historico_geral_json.inventario || {})
+      },
+      conquistas: data.historico_geral_json.conquistas || []
+    } as UserStats;
   }
 
   return NextResponse.json(stats);
@@ -41,7 +49,7 @@ export async function POST(req: Request) {
       ofensiva_atual: stats.ofensivaAtual,
       historico_geral_json: stats,
       updated_at: new Date().toISOString()
-    });
+    }, { onConflict: 'user_id' });
 
     if (error) throw error;
 
