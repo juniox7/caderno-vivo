@@ -21,10 +21,12 @@ export default function AtividadeDiaria() {
   const [jaFeitaHoje, setJaFeitaHoje] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // Prevents double click
 
+  const hoje = new Date().toISOString().split('T')[0];
+  const isConcluida = stats?.dataUltimaAtividadeDiaria === hoje;
+
+  // Carrega do cache ou gera nova ao montar
   useEffect(() => {
     let carregouDoCache = false;
-    const isConcluida = isAtividadeDiariaConcluidaHoje();
-    const hoje = new Date().toISOString().split('T')[0];
     const saved = localStorage.getItem('@cadernovivo_atividade_diaria_hoje');
     
     if (saved) {
@@ -35,25 +37,28 @@ export default function AtividadeDiaria() {
           setSelectedOpcao(data.selectedOpcao || null);
           setGerada(true);
           carregouDoCache = true;
-          if (isConcluida) {
-            setJaFeitaHoje(true);
-            setConcluida(true);
-            setShowResposta(true);
-            setExpanded(false);
-          }
         }
       } catch(e) {}
     }
 
-    if (isConcluida && !carregouDoCache) {
-      setExpanded(false);
-    }
-
-    if (!isConcluida && !carregouDoCache && !loading) {
+    if (!carregouDoCache && !loading) {
       gerarAtividade();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Reage à sincronização da nuvem (ou quando a pessoa conclui)
+  useEffect(() => {
+    if (isConcluida) {
+      setJaFeitaHoje(true);
+      setConcluida(true);
+      setShowResposta(true);
+      // Evita fechar abruptamente se estiver rodando a animação de semente
+      if (!sementeAnimacao && !isSubmitting) {
+        setExpanded(false);
+      }
+    }
+  }, [isConcluida, sementeAnimacao, isSubmitting]);
 
   const streak = stats?.ofensivaAtual || 0;
 
