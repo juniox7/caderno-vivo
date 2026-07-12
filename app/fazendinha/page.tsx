@@ -38,9 +38,11 @@ export default function Fazendinha() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [codigo, setCodigo] = useState('');
   const [resgatando, setResgatando] = useState(false);
+  const [hora, setHora] = useState(12);
 
   useEffect(() => {
     setStats(getStats());
+    setHora(new Date().getHours());
   }, []);
 
   const handleComprar = (id: string, preco: number) => {
@@ -78,6 +80,10 @@ export default function Fazendinha() {
   const proximoNivelArvore = ARVORE_NIVEIS.find(n => n.nivel === stats.inventario.arvoreNivel + 1);
   const arvoreAtual = ARVORE_NIVEIS.find(n => n.nivel === stats.inventario.arvoreNivel);
 
+  const isNoite = hora < 6 || hora >= 18;
+  const bgColor = isNoite ? 'from-indigo-900 to-slate-900 border-indigo-800' : 'from-blue-50 to-cyan-50 border-white';
+  const groundColor = isNoite ? 'from-emerald-900 to-green-800 border-green-800/30' : 'from-emerald-400 to-green-300 border-green-400/30';
+
   return (
     <>
       <Header />
@@ -99,14 +105,25 @@ export default function Fazendinha() {
           <div className="grid md:grid-cols-2 gap-8">
             
             {/* Visual da Fazenda Atual */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl p-6 border-4 border-white shadow-xl relative overflow-hidden h-[400px] flex flex-col items-center justify-end">
-              {/* Sol e nuvens */}
-              <div className="absolute top-8 left-8 text-6xl opacity-80 animate-pulse">☀️</div>
-              <div className="absolute top-12 right-12 text-5xl opacity-60 animate-float" style={{ animationDelay: '1s' }}>☁️</div>
-              <div className="absolute top-24 left-1/3 text-4xl opacity-50 animate-float" style={{ animationDelay: '2s' }}>☁️</div>
+            <div className={`bg-gradient-to-br ${bgColor} rounded-3xl p-6 border-4 shadow-xl relative overflow-hidden h-[400px] flex flex-col items-center justify-end transition-colors duration-1000`}>
+              {/* Sol/Lua e nuvens/estrelas */}
+              {isNoite ? (
+                <>
+                  <div className="absolute top-8 left-8 text-6xl opacity-80 animate-pulse drop-shadow-lg">🌙</div>
+                  <div className="absolute top-12 right-12 text-3xl opacity-60 animate-pulse" style={{ animationDelay: '1s' }}>✨</div>
+                  <div className="absolute top-24 left-1/3 text-4xl opacity-50 animate-pulse" style={{ animationDelay: '2s' }}>✨</div>
+                  <div className="absolute top-32 right-1/3 text-2xl opacity-40 animate-pulse">✨</div>
+                </>
+              ) : (
+                <>
+                  <div className="absolute top-8 left-8 text-6xl opacity-80 animate-pulse">☀️</div>
+                  <div className="absolute top-12 right-12 text-5xl opacity-60 animate-float" style={{ animationDelay: '1s' }}>☁️</div>
+                  <div className="absolute top-24 left-1/3 text-4xl opacity-50 animate-float" style={{ animationDelay: '2s' }}>☁️</div>
+                </>
+              )}
 
               {/* Chão */}
-              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-emerald-400 to-green-300 rounded-b-2xl border-t-4 border-green-400/30" />
+              <div className={`absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t ${groundColor} rounded-b-2xl border-t-4 transition-colors duration-1000`} />
 
               {/* Entidades Renderizadas */}
               <div className="relative z-10 w-full flex items-end justify-center gap-4 pb-8">

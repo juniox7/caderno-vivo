@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { Bell, BellOff, BellRing } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@clerk/nextjs';
 
 export default function PushManager() {
+  const { userId } = useAuth();
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
@@ -27,9 +29,11 @@ export default function PushManager() {
     });
 
     // Notify backend that user opened the app to reset consecutive ignores
-    fetch('/api/push/opened', { method: 'POST' }).catch(() => {});
+    if (userId) {
+      fetch('/api/push/opened', { method: 'POST' }).catch(() => {});
+    }
 
-  }, []);
+  }, [userId]);
 
   const urlBase64ToUint8Array = (base64String: string) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);

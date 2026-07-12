@@ -32,118 +32,137 @@ export async function GET(req: Request) {
     }
 
     const client = await clerkClient();
-    let users = await client.users.getUserList({ limit: 500 });
     let sentCount = 0;
+    let processed = 0;
     const now = Date.now();
-    const todayStr = new Date().toISOString().split('T')[0];
+    
+    let offset = 0;
+    const limit = 500;
+    let hasMore = true;
 
-    for (const user of users.data) {
-      const privateMeta: any = user.privateMetadata || {};
-      const pushSub = privateMeta.pushSubscription;
-      let pushState = privateMeta.pushState || {};
-      
-      if (!pushSub) continue;
-
-      // Trava 1: Se ignorou 3 vezes seguidas, suspende envios diários e move pro cadência de dormente longo.
-      if (pushState.consecutiveIgnores >= 3) {
-         pushState.frequencyReduced = true;
+    while (hasMore) {
+      const users = await client.users.getUserList({ limit, offset });
+      if (users.data.length === 0) {
+        hasMore = false;
+        break;
       }
 
-      // Trava 2: Nunca mais de 1 notificação por dia
-      if (pushState.lastNotificationSentAt) {
-        const lastSentDate = new Date(pushState.lastNotificationSentAt).toISOString().split('T')[0];
-        if (lastSentDate === todayStr) {
-          continue; // Já enviou hoje
-        }
-      }
-
-      // Analisa estado de uso do usuário
-      const createdAt = user.createdAt;
-      const stats = privateMeta.gamificacao?.historicoGeral || { totalAtividades: 0, ultimaAtividade: null };
-      const ofensiva = privateMeta.gamificacao?.ofensivaAtual || 0;
-      const totalActivities = stats.totalAtividades;
-      
-      const lastActivityDate = stats.ultimaAtividade ? new Date(stats.ultimaAtividade).getTime() : 0;
-      
-      const hoursSinceReg = (now - createdAt) / (1000 * 60 * 60);
-      const daysSinceLastActivity = lastActivityDate ? (now - lastActivityDate) / (1000 * 60 * 60 * 24) : 0;
-
-      let notificationToSend = null;
-
-      // Classifica no Segmento apropriado
-      if (totalActivities === 0) {
-        // SEGMENTO 10.1
-        if (pushState.frequencyReduced) {
-            // Silenciado se ignorou demais
-        } else if (hoursSinceReg >= 2 && hoursSinceReg < 24 && pushState.lastTextSent !== TEXTS.S1_G1.id) {
-          notificationToSend = TEXTS.S1_G1;
-        } else if (hoursSinceReg >= 24 && hoursSinceReg < 48 && pushState.lastTextSent !== TEXTS.S1_G2.id) {
-          notificationToSend = TEXTS.S1_G2;
-        }
-      } else if (totalActivities > 0 && daysSinceLastActivity >= 5) {
-        // SEGMENTO 10.4 (Dormência - Avaliado antes para capturar usuários inativos)
-        if (daysSinceLastActivity >= 5 && daysSinceLastActivity < 7 && pushState.lastTextSent !== TEXTS.S4_G1.id) {
-          notificationToSend = TEXTS.S4_G1;
-        } else if (daysSinceLastActivity >= 19 && daysSinceLastActivity < 21 && pushState.lastTextSent !== TEXTS.S4_G2.id) {
-          notificationToSend = TEXTS.S4_G2;
-        }
-      } else if (totalActivities === 1) {
-        // SEGMENTO 10.2
-        if (daysSinceLastActivity >= 1 && daysSinceLastActivity < 2 && pushState.lastTextSent !== TEXTS.S2_G1.id) {
-          notificationToSend = TEXTS.S2_G1;
-        } else if (daysSinceLastActivity >= 3 && daysSinceLastActivity < 4 && pushState.lastTextSent !== TEXTS.S2_G2_DEFAULT.id) {
-          notificationToSend = TEXTS.S2_G2_DEFAULT;
-        }
-      } else if (totalActivities >= 2) {
-        // SEGMENTO 10.3 (Hábito Diário)
-        const tz = privateMeta.pushTimezone || 'America/Sao_Paulo';
-        const userHour = parseInt(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: tz }).format(new Date()));
+      for (const user of users.data) {
+        const privateMeta: any = user.privateMetadata || {};
+        const pushSub = privateMeta.pushSubscription;
+        let pushState = privateMeta.pushState || {};
         
-        if (userHour >= 17 && userHour < 20) {
-          const available = TEXTS.S3.filter(t => t.id !== pushState.lastTextSent);
-          const picked = available[Math.floor(Math.random() * available.length)];
-          
-          if (picked) {
-             notificationToSend = {
-                ...picked,
-                body: picked.body.replace('{{OFENSIVA}}', ofensiva.toString())
-             };
+        if (!pushSub) continue;
+
+        // Trava 1: Se ignorou 3 vezes seguidas, suspende envios diários e move pro cadência de dormente longo.
+        if (pushState.consecutiveIgnores >= 3) {
+           pushState.frequencyReduced = true;
+        }
+
+        // Trava 2: Nunca mais de 1 notificação a cada 4 horas
+        if (pushState.lastNotificationSentAt) {
+          const hoursSinceLast = (now - new Date(pushState.lastNotificationSentAt).getTime()) / (1000 * 60 * 60);
+          if (hoursSinceLast < 4) {
+            continue; 
           }
         }
-      }
 
-      // Dispara a Notificação se houver uma qualificada
-      if (notificationToSend) {
-        try {
-          await webpush.sendNotification(pushSub, JSON.stringify(notificationToSend));
+        // Analisa estado de uso do usuário
+        const createdAt = user.createdAt;
+        const stats = privateMeta.gamificacao?.historicoGeral || { totalAtividades: 0, ultimaAtividade: null };
+        const ofensiva = privateMeta.gamificacao?.ofensivaAtual || 0;
+        const totalActivities = stats.totalAtividades;
+        
+        const lastActivityDate = stats.ultimaAtividade ? new Date(stats.ultimaAtividade).getTime() : 0;
+        
+        const hoursSinceReg = (now - createdAt) / (1000 * 60 * 60);
+        const daysSinceLastActivity = lastActivityDate ? (now - lastActivityDate) / (1000 * 60 * 60 * 24) : 0;
+
+        let notificationToSend = null;
+
+        // Classifica no Segmento apropriado
+        if (totalActivities === 0) {
+          // SEGMENTO 10.1
+          if (pushState.frequencyReduced) {
+              // Silenciado se ignorou demais
+          } else if (hoursSinceReg >= 2 && hoursSinceReg < 24 && pushState.lastTextSent !== TEXTS.S1_G1.id) {
+            notificationToSend = { ...TEXTS.S1_G1, data: { url: '/criar' } };
+          } else if (hoursSinceReg >= 24 && hoursSinceReg < 48 && pushState.lastTextSent !== TEXTS.S1_G2.id) {
+            notificationToSend = { ...TEXTS.S1_G2, data: { url: '/criar' } };
+          }
+        } else if (totalActivities > 0 && daysSinceLastActivity >= 5) {
+          // SEGMENTO 10.4 (Dormência - Avaliado antes para capturar usuários inativos)
+          if (daysSinceLastActivity >= 5 && daysSinceLastActivity < 7 && pushState.lastTextSent !== TEXTS.S4_G1.id) {
+            notificationToSend = { ...TEXTS.S4_G1, data: { url: '/' } };
+          } else if (daysSinceLastActivity >= 19 && daysSinceLastActivity < 21 && pushState.lastTextSent !== TEXTS.S4_G2.id) {
+            notificationToSend = { ...TEXTS.S4_G2, data: { url: '/' } };
+          }
+        } else if (totalActivities === 1) {
+          // SEGMENTO 10.2
+          if (daysSinceLastActivity >= 1 && daysSinceLastActivity < 2 && pushState.lastTextSent !== TEXTS.S2_G1.id) {
+            notificationToSend = { ...TEXTS.S2_G1, data: { url: '/criar' } };
+          } else if (daysSinceLastActivity >= 3 && daysSinceLastActivity < 4 && pushState.lastTextSent !== TEXTS.S2_G2_DEFAULT.id) {
+            notificationToSend = { ...TEXTS.S2_G2_DEFAULT, data: { url: '/criar' } };
+          }
+        } else if (totalActivities >= 2) {
+          // SEGMENTO 10.3 (Hábito Diário)
+          const tz = privateMeta.pushTimezone || 'America/Sao_Paulo';
+          const userHour = parseInt(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: tz }).format(new Date()));
           
-          pushState.lastNotificationSentAt = new Date().toISOString();
-          pushState.lastTextSent = notificationToSend.id;
-          pushState.consecutiveIgnores = (pushState.consecutiveIgnores || 0) + 1;
-
-          await client.users.updateUserMetadata(user.id, {
-            privateMetadata: {
-              ...privateMeta,
-              pushState
+          if ((userHour >= 9 && userHour < 12) || (userHour >= 17 && userHour < 20)) {
+            const available = TEXTS.S3.filter(t => t.id !== pushState.lastTextSent);
+            const picked = available[Math.floor(Math.random() * available.length)];
+            
+            if (picked) {
+               notificationToSend = {
+                  ...picked,
+                  body: picked.body.replace('{{OFENSIVA}}', ofensiva.toString()),
+                  data: { url: '/fazendinha' }
+               };
             }
-          });
+          }
+        }
 
-          sentCount++;
-        } catch (e: any) {
-          if (e.statusCode === 410 || e.statusCode === 404) {
-            // Subscription expired or unsubscribed
+        // Dispara a Notificação se houver uma qualificada
+        if (notificationToSend) {
+          try {
+            await webpush.sendNotification(pushSub, JSON.stringify(notificationToSend));
+            
+            pushState.lastNotificationSentAt = new Date().toISOString();
+            pushState.lastTextSent = notificationToSend.id;
+            pushState.consecutiveIgnores = (pushState.consecutiveIgnores || 0) + 1;
+
             await client.users.updateUserMetadata(user.id, {
               privateMetadata: {
                 ...privateMeta,
-                pushSubscription: null
+                pushState
               }
             });
+
+            sentCount++;
+          } catch (e: any) {
+            if (e.statusCode === 410 || e.statusCode === 404) {
+              // Subscription expired or unsubscribed
+              await client.users.updateUserMetadata(user.id, {
+                privateMetadata: {
+                  ...privateMeta,
+                  pushSubscription: null
+                }
+              });
+            }
           }
         }
       }
+
+      processed += users.data.length;
+      if (users.data.length < limit) {
+        hasMore = false;
+      } else {
+        offset += limit;
+      }
     }
 
-    return NextResponse.json({ success: true, processed: users.data.length, sent: sentCount });
+    return NextResponse.json({ success: true, processed, sent: sentCount });
   } catch (err: any) {
     console.error(err);
     return NextResponse.json({ error: err.message }, { status: 500 });

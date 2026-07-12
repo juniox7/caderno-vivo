@@ -39,9 +39,14 @@ export default function AtividadeDiaria() {
             setJaFeitaHoje(true);
             setConcluida(true);
             setShowResposta(true);
+            setExpanded(false);
           }
         }
       } catch(e) {}
+    }
+
+    if (isConcluida && !carregouDoCache) {
+      setExpanded(false);
     }
 
     if (!isConcluida && !carregouDoCache && !loading) {
@@ -95,7 +100,10 @@ export default function AtividadeDiaria() {
         }));
       }
       
-      setTimeout(() => setSementeAnimacao(false), 1500);
+      setTimeout(() => {
+        setSementeAnimacao(false);
+        setExpanded(false);
+      }, 2500);
     } else {
       setIsSubmitting(false); // only reset if it fails, otherwise button hides
     }
@@ -144,7 +152,9 @@ export default function AtividadeDiaria() {
                 Atividade do Dia
               </h2>
               <p className="text-xs text-surface-400">
-                Um desafio novo todo dia para exercitar o cérebro!
+                {concluida 
+                  ? '✅ Concluída! Resposta confirmada.' 
+                  : 'Um desafio novo todo dia para exercitar o cérebro!'}
               </p>
             </div>
           </div>

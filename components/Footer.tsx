@@ -11,6 +11,7 @@ export default function Footer() {
         </p>
         <p>© {new Date().getFullYear()} CadernoVivo. Menos tela. Mais diversão impressa.</p>
         <div className="flex items-center gap-4 text-xs font-medium">
+          <Link href="/instalar" className="hover:text-primary-600 transition-colors text-primary-500 font-bold">Instalar App</Link>
           <Link href="/termos" className="hover:text-surface-600 transition-colors">Termos de Uso</Link>
           <Link href="/privacidade" className="hover:text-surface-600 transition-colors">Privacidade</Link>
         </div>
