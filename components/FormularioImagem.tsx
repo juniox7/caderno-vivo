@@ -222,12 +222,10 @@ export default function FormularioImagem() {
               </h2>
               <div className="bg-white dark:bg-[#0f172a] rounded-3xl overflow-hidden shadow-2xl border border-surface-200 relative">
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-                <PreviewAtividade 
-                  atividade={resultado} 
-                  idade={7} 
-                  nomes={[]} 
-                  tema={tema} 
-                  tipo={estilo === 'ilustracao' ? 'ilustracao' : 'historia'} 
+                <PreviewAtividade
+                atividade={resultado}
+                modo="Imagens"
+                onRefazer={() => setResultado(null)} 
                 />
               </div>
             </div>
