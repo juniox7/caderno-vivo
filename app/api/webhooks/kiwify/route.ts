@@ -77,10 +77,12 @@ export async function POST(req: Request) {
   console.log('[KIWIFY_WEBHOOK] Evento recebido:', event.type, event.id);
 
   // Eventos que nos interessam para assinatura:
-  // - order_approved: pagamento da assinatura aprovado
-  // - subscription_created: nova assinatura criada (alternativa)
-  if (event.type === 'order_approved') {
-    const data = event.data;
+  // - order_status === 'approved' ou 'paid'
+  const eventStatus = event.order_status || event.status || event.type;
+  
+  if (eventStatus === 'approved' || eventStatus === 'paid' || eventStatus === 'order_approved') {
+    // A Kiwify normalmente envia os dados na raiz do JSON, mas alguns formatos vêm dentro de 'data'
+    const data = event.data || event;
 
     if (!data) {
       console.error('[KIWIFY_WEBHOOK] Payload sem campo data');
@@ -88,14 +90,14 @@ export async function POST(req: Request) {
     }
 
     // Extrair o userId do parâmetro de rastreamento (src)
-    const trackingParams = data.TrackingParameters || data.tracking_parameters || {};
+    const trackingParams = data.TrackingParameters || data.tracking_parameters || data.trackingParameters || {};
     let userId = trackingParams.src;
     
     const client = await clerkClient();
 
     if (!userId) {
       console.warn('[KIWIFY_WEBHOOK] userId (src) não encontrado. Tentando buscar pelo email...');
-      const customerEmail = data.Customer?.email || data.email;
+      const customerEmail = data.customer?.email || data.Customer?.email || data.email;
       
       if (customerEmail) {
         try {
@@ -150,7 +152,7 @@ export async function POST(req: Request) {
           plan_tier: planTier,
           kiwify_order_id: data.order_id || data.id,
           kiwify_product_id: productId,
-          kiwify_customer_email: data.Customer?.email || data.email || '',
+          kiwify_customer_email: data.customer?.email || data.Customer?.email || data.email || '',
           kiwify_updated_at: new Date().toISOString(),
         },
       });
@@ -161,7 +163,7 @@ export async function POST(req: Request) {
       return new NextResponse('Erro ao atualizar usuário', { status: 500 });
     }
   } else {
-    console.log('[KIWIFY_WEBHOOK] Evento ignorado (não é order_approved):', event.type);
+    console.log('[KIWIFY_WEBHOOK] Evento ignorado (status não aprovado):', eventStatus);
   }
 
   return new NextResponse(null, { status: 200 });
