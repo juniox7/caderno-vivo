@@ -10,6 +10,7 @@ import { setHistoricoUserId, syncCloudHistorico } from '@/lib/historico';
 import { toast } from 'sonner';
 import OnboardingModal from '@/components/OnboardingModal';
 import { useGamificacao } from '@/components/GamificacaoProvider';
+import InstallPWA from '@/components/InstallPWA';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -111,6 +112,7 @@ export default function Header() {
 
         {/* CTA desktop */}
         <div className="hidden md:flex items-center gap-3">
+          {mounted && <InstallPWA />}
           <Link href="/fazendinha" className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-surface-100 transition-colors text-sm font-semibold text-surface-600">
             <Store className="w-4 h-4 text-amber-500" />
             Loja
@@ -194,6 +196,7 @@ export default function Header() {
       {menuOpen && (
         <div className="md:hidden glass-light animate-fade-in border-t border-surface-200">
           <nav className="flex flex-col px-4 py-4 gap-3">
+            {mounted && <InstallPWA />}
             <Link
               href="/"
               onClick={() => setMenuOpen(false)}

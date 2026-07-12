@@ -25,6 +25,12 @@ export const metadata: Metadata = {
   title: "CadernoVivo — Atividades Personalizadas por IA para seu filho",
   description:
     "Combata o excesso de telas! Gere cadernos de atividades educativas personalizados com inteligência artificial. Prontos para imprimir em casa. Feito para pais, mães e professores.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "CadernoVivo",
+  },
   keywords: [
     "atividades infantis",
     "caderno de atividades",
@@ -42,6 +48,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
   },
+};
+
+export const viewport = {
+  themeColor: "#6366f1",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
