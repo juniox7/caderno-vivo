@@ -22,31 +22,29 @@ export default function AtividadeDiaria() {
   const [isSubmitting, setIsSubmitting] = useState(false); // Prevents double click
 
   useEffect(() => {
-    const carregarEstado = () => {
-      const isConcluida = isAtividadeDiariaConcluidaHoje();
-      if (isConcluida) {
-        setJaFeitaHoje(true);
-        setConcluida(true);
-        
-        const saved = localStorage.getItem('@cadernovivo_atividade_diaria_hoje');
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            // Verifica se a atividade salva é de hoje, para evitar atividades velhas
-            const hoje = new Date().toISOString().split('T')[0];
-            if (data.data === hoje) {
-              setAtividade(data.atividade);
-              setSelectedOpcao(data.selectedOpcao);
-              setGerada(true);
-              setShowResposta(true);
-            }
-          } catch(e) {}
+    let carregouDoCache = false;
+    const isConcluida = isAtividadeDiariaConcluidaHoje();
+    const hoje = new Date().toISOString().split('T')[0];
+    const saved = localStorage.getItem('@cadernovivo_atividade_diaria_hoje');
+    
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.data === hoje && data.atividade) {
+          setAtividade(data.atividade);
+          setSelectedOpcao(data.selectedOpcao || null);
+          setGerada(true);
+          carregouDoCache = true;
+          if (isConcluida) {
+            setJaFeitaHoje(true);
+            setConcluida(true);
+            setShowResposta(true);
+          }
         }
-      }
-    };
+      } catch(e) {}
+    }
 
-    carregarEstado();
-    if (!isAtividadeDiariaConcluidaHoje() && !gerada && !loading) {
+    if (!isConcluida && !carregouDoCache && !loading) {
       gerarAtividade();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,6 +63,13 @@ export default function AtividadeDiaria() {
       setShowResposta(false);
       setSelectedOpcao(null);
       setErroOpcao(null);
+      
+      const hoje = new Date().toISOString().split('T')[0];
+      localStorage.setItem('@cadernovivo_atividade_diaria_hoje', JSON.stringify({
+        data: hoje,
+        atividade: data,
+        selectedOpcao: null
+      }));
     } catch (err) {
       console.error('Erro:', err);
     } finally {
@@ -100,12 +105,18 @@ export default function AtividadeDiaria() {
     if (concluida || isSubmitting) return;
     
     setSelectedOpcao(opcao);
-    if (atividade?.respostaCorreta && opcao === atividade.respostaCorreta) {
+    setErroOpcao(null);
+  };
+
+  const confirmarResposta = () => {
+    if (!selectedOpcao || isSubmitting || concluida) return;
+    
+    if (atividade?.respostaCorreta && selectedOpcao === atividade.respostaCorreta) {
       setErroOpcao(null);
       setShowResposta(true);
       concluirAtividadeUI(2); // Bonus for getting it right!
     } else {
-      setErroOpcao(opcao);
+      setErroOpcao(selectedOpcao);
     }
   };
 
@@ -213,7 +224,7 @@ export default function AtividadeDiaria() {
 
                   {/* Multiple Choice Options */}
                   {atividade.opcoes && atividade.opcoes.length > 0 && (
-                    <div className="space-y-2 mt-4">
+                    <div className="space-y-3 mt-4">
                       {atividade.opcoes.map((opcao, i) => {
                         const letter = String.fromCharCode(65 + i); // A, B, C, D
                         const isSelected = selectedOpcao === opcao;
@@ -226,7 +237,7 @@ export default function AtividadeDiaria() {
                         } else if (isError) {
                           btnClass += "bg-red-50 border-red-300 text-red-700 animate-shake";
                         } else if (isSelected) {
-                          btnClass += "bg-primary-50 border-primary-300 text-primary-800";
+                          btnClass += "bg-primary-50 border-primary-300 text-primary-800 ring-2 ring-primary-200";
                         } else {
                           btnClass += "bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 border-surface-200 hover:border-primary-300 hover:bg-white dark:bg-surface-100 dark:text-surface-800 text-surface-700";
                         }
@@ -245,6 +256,16 @@ export default function AtividadeDiaria() {
                           </button>
                         );
                       })}
+                      
+                      {!concluida && (
+                        <button
+                          onClick={confirmarResposta}
+                          disabled={!selectedOpcao || isSubmitting}
+                          className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm transition-all shadow-md active:scale-[0.98] flex items-center justify-center"
+                        >
+                          Confirmar Resposta
+                        </button>
+                      )}
                     </div>
                   )}
 
