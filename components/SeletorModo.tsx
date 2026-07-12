@@ -126,6 +126,52 @@ export default function SeletorModo() {
           );
         })}
       </div>
+
+      {/* Banner Especial: Estúdio de Arte IA */}
+      <div className="mt-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <Link
+          href="/criar/imagens"
+          className="group relative block w-full rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-[2px] transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/30 hover:-translate-y-1 active:scale-[0.98]"
+        >
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity blur-md" />
+          
+          <div className="relative h-full w-full rounded-[22px] bg-white dark:bg-[#0f172a] px-6 py-8 sm:px-10 sm:py-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 overflow-hidden">
+            {/* Decorações de Fundo */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            {/* Ícone */}
+            <div className="flex-shrink-0 relative">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-purple-500/30 group-hover:scale-110 transition-transform duration-500 z-10 relative">
+                <Sparkles className="w-10 h-10 text-white" />
+              </div>
+              <div className="absolute -top-2 -right-2 text-2xl animate-bounce" style={{ animationDuration: '2s' }}>🎨</div>
+              <div className="absolute -bottom-2 -left-2 text-2xl animate-bounce" style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}>🪄</div>
+            </div>
+
+            {/* Conteúdo */}
+            <div className="flex-1 text-center md:text-left z-10">
+              <span className="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-black uppercase tracking-wider mb-3">
+                Nova Função Premium
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 mb-2" style={{ fontFamily: 'var(--font-baloo)' }}>
+                Estúdio de Arte com Inteligência Artificial
+              </h3>
+              <p className="text-surface-500 dark:text-surface-400 text-sm sm:text-base leading-relaxed max-w-2xl">
+                Crie desenhos incríveis para colorir ou ilustrações coloridas exclusivas em segundos! Basta digitar o que você imagina e a IA desenha. Transforme qualquer ideia em arte.
+              </p>
+            </div>
+
+            {/* Botão */}
+            <div className="flex-shrink-0 z-10 w-full md:w-auto">
+              <div className="flex items-center justify-center w-full md:w-auto px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold text-lg gap-2 group-hover:shadow-lg transition-all">
+                Criar Arte
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        </Link>
+      </div>
     </section>
   );
 }

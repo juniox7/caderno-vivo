@@ -769,8 +769,7 @@ export default function FormularioLivre() {
             </div>
 
             {/* Gerar Imagens Toggle */}
-            {isLivre && (
-              <div className="space-y-4 pt-2 animate-fade-in-up">
+            <div className="space-y-4 pt-2 animate-fade-in-up">
                 <label className="flex items-center gap-3 cursor-pointer p-4 rounded-xl border border-surface-200 bg-white dark:bg-surface-100 dark:text-surface-800 hover:bg-surface-50 dark:bg-[#0f172a] dark:text-surface-100 transition-colors">
                   <input
                     type="checkbox"
@@ -828,9 +827,9 @@ export default function FormularioLivre() {
                 </div>
               )}
               </div>
-            )}
             </>
             )}
+
 
             {tipoAtividade !== 'historia' && (
               <div className="space-y-3 pt-2 animate-fade-in-up">
