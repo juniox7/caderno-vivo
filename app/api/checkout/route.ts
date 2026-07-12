@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     }
 
     const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
-    const rateLimitResponse = applyRateLimit(ip, 10, 60000);
+    const rateLimitResponse = await applyRateLimit(ip, 10, 60000);
     if (rateLimitResponse) return rateLimitResponse;
 
     const body = await req.json();

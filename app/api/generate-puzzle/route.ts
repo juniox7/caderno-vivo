@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
   try {
     const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
-    const rateLimitResponse = applyRateLimit(ip, 5, 60000); // 5 reqs per minute
+    const rateLimitResponse = await applyRateLimit(ip, 5, 60000); // 5 reqs per minute
     if (rateLimitResponse) return rateLimitResponse;
 
     const body = await req.json();

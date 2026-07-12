@@ -15,7 +15,7 @@ const atividadeSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
-    const rateLimitResponse = applyRateLimit(ip, 10, 60000);
+    const rateLimitResponse = await applyRateLimit(ip, 10, 60000);
     if (rateLimitResponse) return rateLimitResponse;
 
     const rawBody = await request.json();
