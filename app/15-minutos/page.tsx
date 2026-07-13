@@ -81,19 +81,19 @@ export default function LandingPage15Minutos() {
           {/* Galeria Responsiva */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <div className="aspect-[3/4] bg-slate-100 rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-              <img src="/images/preview-1.png" alt="Exemplo de Atividade de Letras e Sons: Caça à letra" className="object-cover w-full h-full" loading="lazy" />
+              <img src="/images/preview-1.jpg" alt="Exemplo de Atividade de Letras e Sons: Caça à letra" className="object-cover w-full h-full" loading="lazy" />
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 text-sm text-slate-500 font-medium opacity-0 hover:opacity-100 transition-opacity">Letras e Sons</div>
             </div>
             <div className="aspect-[3/4] bg-slate-100 rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-              <img src="/images/preview-2.png" alt="Exemplo de Atividade: Letra misteriosa" className="object-cover w-full h-full" loading="lazy" />
+              <img src="/images/preview-2.jpg" alt="Exemplo de Atividade: Letra misteriosa" className="object-cover w-full h-full" loading="lazy" />
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 text-sm text-slate-500 font-medium opacity-0 hover:opacity-100 transition-opacity">Brincadeiras Práticas</div>
             </div>
             <div className="aspect-[3/4] bg-slate-100 rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-              <img src="/images/preview-3.png" alt="Exemplo de Atividade de Sílabas: Complete a palavra" className="object-cover w-full h-full" loading="lazy" />
+              <img src="/images/preview-3.jpg" alt="Exemplo de Atividade de Sílabas: Complete a palavra" className="object-cover w-full h-full" loading="lazy" />
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 text-sm text-slate-500 font-medium opacity-0 hover:opacity-100 transition-opacity">Sílabas</div>
             </div>
             <div className="aspect-[3/4] bg-slate-100 rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow relative">
-              <img src="/images/preview-4.png" alt="Exemplo dos Cartões de Letras Bônus" className="object-cover w-full h-full" loading="lazy" />
+              <img src="/images/preview-4.jpg" alt="Exemplo dos Cartões de Letras Bônus" className="object-cover w-full h-full" loading="lazy" />
               <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 text-sm text-slate-500 font-medium opacity-0 hover:opacity-100 transition-opacity">Cartões Bônus</div>
             </div>
           </div>
