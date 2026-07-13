@@ -35,6 +35,23 @@ const KIWIFY_CHECKOUT_URL = "https://pay.kiwify.com.br/rG3JQhV";
 export default function LandingPage15Minutos() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans selection:bg-purple-200 pb-20 md:pb-0">
+      {/* Meta Pixel Code */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '1360366599626025');
+          fbq('track', 'PageView');
+        `
+      }} />
+      <noscript><img height="1" width="1" style={{ display: 'none' }} src="https://www.facebook.com/tr?id=1360366599626025&ev=PageView&noscript=1" /></noscript>
+      {/* End Meta Pixel Code */}
       
       {/* 1. PRIMEIRA DOBRA (HERO) */}
       <section className="relative overflow-hidden bg-gradient-to-b from-purple-900 to-purple-800 text-white pt-16 pb-24 px-6">
@@ -400,10 +417,10 @@ export default function LandingPage15Minutos() {
       <footer className="bg-slate-950 text-slate-500 py-12 text-center border-t border-slate-800">
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex flex-wrap justify-center gap-6 mb-8 text-sm font-medium">
-            <a href="#" className="hover:text-white transition-colors">Política de Privacidade</a>
-            <a href="#" className="hover:text-white transition-colors">Termos de Uso</a>
-            <a href="#" className="hover:text-white transition-colors">Política de Reembolso</a>
-            <a href="#" className="hover:text-white transition-colors">Contato / Suporte</a>
+            <a href="/privacidade" className="hover:text-white transition-colors">Política de Privacidade</a>
+            <a href="/termos" className="hover:text-white transition-colors">Termos de Uso</a>
+            <a href="/reembolso" className="hover:text-white transition-colors">Política de Reembolso</a>
+            <a href="/contato" className="hover:text-white transition-colors">Contato / Suporte</a>
           </div>
           <p className="mb-4">© {new Date().getFullYear()} Caderno Vivo. Todos os direitos reservados.</p>
           <p className="text-xs opacity-60 leading-relaxed max-w-2xl mx-auto">
