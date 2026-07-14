@@ -30,3 +30,24 @@ CREATE TABLE IF NOT EXISTS public.historico (
 -- Criar índices para busca rápida
 CREATE INDEX IF NOT EXISTS idx_historico_user_id ON public.historico(user_id);
 CREATE INDEX IF NOT EXISTS idx_historico_data ON public.historico(data DESC);
+
+-- 3. Tabela de Prospecção de Clínicas (Automação)
+CREATE TABLE IF NOT EXISTS public.prospeccoes (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  nicho text NOT NULL,
+  cidade text NOT NULL,
+  nome_clinica text NOT NULL,
+  telefone text,
+  email text,
+  site_atual text,
+  status_envio text DEFAULT 'pendente', -- pendente, enviado, falha
+  mensagem_erro text,
+  created_at timestamp with time zone DEFAULT now() NOT NULL,
+  -- Fase 2: Colunas Inteligentes
+  foto_url text,
+  cor_primaria text DEFAULT 'blue',
+  copy_vendas text,
+  pontos_fracos text
+);
+
+CREATE INDEX IF NOT EXISTS idx_prospeccoes_status ON public.prospeccoes(status_envio);
